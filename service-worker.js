@@ -2,13 +2,13 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open('pip-notes-v1').then((cache) => {
             return cache.addAll([
-                '/fullpip-notes/',
-                '/fullpip-notes/index.html',
-                '/fullpip-notes/styles/main.css',
-                '/fullpip-notes/scripts/app.js',
-                '/fullpip-notes/manifest.json',
-                '/fullpip-notes/icons/icon-192x192.png',
-                '/fullpip-notes/icons/icon-512x512.png'
+                '/fullpip-notes-debugging/',
+                '/fullpip-notes-debugging/index.html',
+                '/fullpip-notes-debugging/styles/main.css',
+                '/fullpip-notes-debugging/scripts/app.js',
+                '/fullpip-notes-debugging/manifest.json',
+                '/fullpip-notes-debugging/icons/icon-192x192.png',
+                '/fullpip-notes-debugging/icons/icon-512x512.png'
             ]);
         })
     );
