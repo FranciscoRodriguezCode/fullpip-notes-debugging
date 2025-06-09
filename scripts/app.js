@@ -234,3 +234,5 @@ if (window.visualViewport) {
     setTimeout(handleViewportChange, 100);
   });
 }
+
+const manifestThemeManager = new ManifestThemeManager();
