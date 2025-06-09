@@ -126,9 +126,21 @@ copyBtn.addEventListener('click', () => {
 });
 
 // Theme handling
-const themeBtn = document.getElementById('theme-btn');
-const colorModal = document.getElementById('color-modal');
-const colorOptions = document.querySelectorAll('.color-option');
+document.addEventListener('DOMContentLoaded', () => {
+    const manifestThemeManager = new ManifestThemeManager();
+    
+    const themeBtn = document.getElementById('theme-btn');
+    const colorModal = document.getElementById('color-modal');
+    const colorOptions = document.querySelectorAll('.color-option');
+
+    colorOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const theme = option.dataset.theme;
+            // When theme changes, update the manifest
+            manifestThemeManager.updateManifestTheme(theme === 'dark');
+          });
+    });
+});
 
 const themes = {
   light: {
