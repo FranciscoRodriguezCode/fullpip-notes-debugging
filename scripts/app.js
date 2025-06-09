@@ -191,16 +191,6 @@ function updateThemeColors(isDark) {
     }
 }
 
-/* Add this to your existing theme change handler
-colorOptions.forEach(option => {
-    option.addEventListener('click', () => {
-        const theme = option.dataset.theme;
-        updateThemeColors(theme === 'dark');
-        // ...existing theme change code...
-    });
-});
-*/
-
 // Load saved theme preference or set default theme
 const savedTheme = localStorage.getItem('preferred-theme') || 'light';
 applyTheme(savedTheme);
