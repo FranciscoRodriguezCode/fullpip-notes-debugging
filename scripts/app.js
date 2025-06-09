@@ -51,7 +51,7 @@ textBox.addEventListener('keydown', (e) => {
     const lastLine = lines[lines.length - 1];
     const isBullet = lastLine.startsWith('- ');
     const isEmptyBullet = lastLine.trim() === '-' || lastLine.trim() === '- ';
-  
+        
     if (isBullet) {
       e.preventDefault();
       if (isEmptyBullet) {
@@ -125,7 +125,59 @@ copyBtn.addEventListener('click', () => {
   }
 });
 
-    // Handle viewport changes
+// Theme handling
+const themeBtn = document.getElementById('theme-btn');
+const colorModal = document.getElementById('color-modal');
+const colorOptions = document.querySelectorAll('.color-option');
+
+const themes = {
+  light: {
+    '--text-color': '#000',
+    '--background-color': '#f5f5f5',
+    '--button-bg': '#ffffff',
+    '--button-border': '#d1d1d1',
+    '--textarea-bg': '#ffffff',
+    '--textarea-border': '#d1d1d1',
+    '--border-color': '#d1d1d1'  // Add border color for pip container
+  },
+  dark: {
+    '--text-color': '#fff',
+    '--background-color': '#222',
+    '--button-bg': '#333',
+    '--button-border': '#fff',
+    '--textarea-bg': '#333',
+    '--textarea-border': '#555',
+    '--border-color': '#fff'
+  }
+};
+
+themeBtn.addEventListener('click', () => {
+  colorModal.style.display = 'flex';
+});
+
+colorOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    const theme = option.getAttribute('data-theme');
+    applyTheme(theme);
+    colorModal.style.display = 'none';
+        
+    // Save theme preference
+    localStorage.setItem('preferred-theme', theme);
+  });
+});
+
+function applyTheme(theme) {
+  const themeVars = themes[theme];
+  for (const [property, value] of Object.entries(themeVars)) {
+    document.documentElement.style.setProperty(property, value);
+  }
+}
+
+// Load saved theme preference or set default theme
+const savedTheme = localStorage.getItem('preferred-theme') || 'light';
+applyTheme(savedTheme);
+
+// Handle viewport changes
 if (window.visualViewport) {
   let maxVisualHeight = window.innerHeight;
       
@@ -156,11 +208,11 @@ if (window.visualViewport) {
       // Add padding to prevent overlap with keyboard
       const keyboardPadding = 20; // Adjust this value if needed
       const availableHeight = visualHeight - (pipHeight + topSpacerHeight + keyboardPadding);
-      
+          
       textBoxContainer.style.position = 'fixed';
       textBoxContainer.style.top = `${pipHeight + topSpacerHeight}px`;
       textBoxContainer.style.height = `${availableHeight}px`;
-       textBoxContainer.style.left = '0';
+      textBoxContainer.style.left = '0';
       textBoxContainer.style.right = '0';
     } else {
       buttonContainer.style.display = 'flex';

@@ -12,27 +12,38 @@
     <meta name="theme-color" content="ffffff">
 </head>
 <body>
-    <div class="fullpip-top-spacer" id="fullpip-top-spacer"></div>
-    <div class="pip-container">
-        <div class="full-pip" id="full-pip"></div>
-    </div>
+  <div class="fullpip-top-spacer" id="fullpip-top-spacer"></div>
+  <div class="pip-container">
+    <div class="full-pip" id="full-pip"></div>
+  </div>
 
-    <div class="text-box-container" id="text-box-container">
-        <textarea class="text-box" id="note-area" placeholder="Start typing..."></textarea>
-    </div>
+  <div class="text-box-container" id="text-box-container">
+    <textarea class="text-box" id="note-area" placeholder="Start typing..."></textarea>
+  </div>
 
-    <div class="button-container">
-        <button id="download-btn">Download .txt</button>
-        <button id="copy-btn">Copy to Clipboard</button>
-    </div>
+  <div class="button-container">
+    <button id="download-btn">Download .txt</button>
+    <button id="theme-btn">Theme</button>
+    <button id="copy-btn">Copy to Clipboard</button>
+  </div>
 
-    <div id="filename-modal" class="modal">
-        <div class="modal-content">
-            <h2>Enter Document Name</h2>
-            <input type="text" id="filename-input" placeholder="Enter filename...">
-            <button id="filename-continue">Continue</button>
-        </div>
+  <div id="filename-modal" class="modal">
+    <div class="modal-content">
+      <h2>Enter Document Name</h2>
+      <input type="text" id="filename-input" placeholder="Enter filename...">
+      <button id="filename-continue">Continue</button>
     </div>
+  </div>
+
+  <div id="color-modal" class="modal">
+    <div class="modal-content">
+      <h2>Select Theme</h2>
+      <div class="color-grid">
+        <div class="color-option" data-theme="light">Light Mode</div>
+        <div class="color-option" data-theme="dark">Dark Mode</div>
+      </div>
+    </div>
+  </div>
 
     <script src="/fullpip-notes-debugging/scripts/app.js"></script>
     <script>

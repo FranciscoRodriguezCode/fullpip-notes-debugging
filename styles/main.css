@@ -12,7 +12,8 @@ html, body {
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #fff;
+  background: var(--background-color);
+  color: var(--text-color);
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -50,24 +51,26 @@ body {
 }
 
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 20;
-    align-items: center;
-    justify-content: center;
-    }
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 20;
+  align-items: center;
+  justify-content: center;
+}
 
 .modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 400px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 400px;
+  border: 1px solid var(--border-color);
 }
 
 .modal-content h2 {
@@ -81,12 +84,18 @@ body {
   margin: 10px 0;
   font-size: max(16px, 2.5vmin);
   box-sizing: border-box;
+  background-color: var(--textarea-bg);
+  color: var(--text-color);
+  border: 1px solid var(--textarea-border);
 }
 
 .modal-content button {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: 1px solid var(--button-border);
 }
 
 .fullpip-top-spacer {
@@ -96,7 +105,7 @@ body {
 }
 
 .pip-container {
-      display: flex;
+  display: flex;
   width: 100%;
   height: var(--pip-full-height);
   flex-shrink: 0;
@@ -107,7 +116,7 @@ body {
 .full-pip {
   width: 90%;
   height: 80%;
-  border: 2px solid #000;
+  border: 2px solid var(--border-color); /* Change from #000 to variable */
   border-radius: 10px;
   background: transparent;
   margin: 0 auto;
@@ -127,8 +136,9 @@ body {
 .text-box {
   width: 100%;
   height: 100%;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: var(--textarea-border);
+  background: var(--textarea-bg);
+  color: var(--text-color);
   font-size: max(16px, 3vmin);
   line-height: 1.2;
   padding: 8px;
@@ -163,5 +173,37 @@ button {
   font-size: max(16px, 3vmin);
   cursor: pointer;
   border-radius: 5px;
-  border: 1px solid #000;
+  border: var(--button-border);
+  background: var(--button-bg);
+  color: var(--text-color);
 }
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.color-option {
+  padding: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+.color-option.selected {
+  border-color: #007aff;
+}
+
+[data-theme="light"] {
+  background-color: #f5f5f5;
+  color: #000;
+  border: 1px solid #d1d1d1;  /* Added border for better visibility */
+}
+
+[data-theme="dark"] {
+  background-color: #222;
+  color: #fff;
+} 
