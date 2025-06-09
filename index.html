@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Full PiP Notes</title>
+    <link rel="stylesheet" href="/fullpip-notes/styles/main.css">
+    <link rel="manifest" href="/fullpip-notes/manifest.json">
+    <link rel="apple-touch-icon" href="/fullpip-notes/icons/icon-192x192.png">
+    <meta name="theme-color" content="ffffff">
+</head>
+<body>
+    <div class="fullpip-top-spacer" id="fullpip-top-spacer"></div>
+    <div class="pip-container">
+        <div class="full-pip" id="full-pip"></div>
+    </div>
+
+    <div class="text-box-container" id="text-box-container">
+        <textarea class="text-box" id="note-area" placeholder="Start typing..."></textarea>
+    </div>
+
+    <div class="button-container">
+        <button id="download-btn">Download .txt</button>
+        <button id="copy-btn">Copy to Clipboard</button>
+    </div>
+
+    <div id="filename-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Document Name</h2>
+            <input type="text" id="filename-input" placeholder="Enter filename...">
+            <button id="filename-continue">Continue</button>
+        </div>
+    </div>
+
+    <script src="/fullpip-notes/scripts/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/fullpip-notes/service-worker.js')
+                .then(registration => console.log('ServiceWorker registered'))
+                .catch(err => console.log('ServiceWorker registration failed:', err));
+        }
+    </script>
+</body>
+</html>

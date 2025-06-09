@@ -1,0 +1,167 @@
+:root {
+  --pip-full-height: min(24vh, 240px);
+  --pip-full-padding: min(3vh, 30px);
+  --buttons-height: min(8vh, 80px);
+}
+
+html, body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+@media screen and (orientation: landscape) {
+  body::before {
+    content: "Please rotate your device to portrait mode.";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ff7d7d;
+    color: #000;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 1000;
+  }
+
+  .pip-container,
+  .text-box-container,
+  .button-container {
+    display: none;
+  }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 20;
+    align-items: center;
+    justify-content: center;
+    }
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  font-size: max(18px, 3vmin);
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  font-size: max(16px, 2.5vmin);
+  box-sizing: border-box;
+}
+
+.modal-content button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.fullpip-top-spacer {
+  width: 100%;
+  height: var(--pip-full-padding);
+  flex-shrink: 0;
+}
+
+.pip-container {
+      display: flex;
+  width: 100%;
+  height: var(--pip-full-height);
+  flex-shrink: 0;
+  z-index: 5;
+  position: relative;
+}
+
+.full-pip {
+  width: 90%;
+  height: 80%;
+  border: 2px solid #000;
+  border-radius: 10px;
+  background: transparent;
+  margin: 0 auto;
+}
+
+.text-box-container {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  background: transparent;
+  z-index: 10;
+  padding: 0px 8px 8px 8px;
+  box-sizing: border-box;
+  margin-top: var(--pip-full-padding);
+}
+
+.text-box {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: max(16px, 3vmin);
+  line-height: 1.2;
+  padding: 8px;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
+  text-indent: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.text-box:focus {
+  outline: 2px solid #007aff;
+  outline-offset: -1px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+  height: var(--buttons-height);
+  z-index: 15;
+  padding: 0.3vh;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+button {
+  padding: 1vh 2vw;
+  font-size: max(16px, 3vmin);
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #000;
+}
