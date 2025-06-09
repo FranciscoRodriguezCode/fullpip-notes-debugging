@@ -190,7 +190,7 @@ function updateThemeColors(isDark) {
     }
 }
 
-// Add this to your existing theme change handler
+/* Add this to your existing theme change handler
 colorOptions.forEach(option => {
     option.addEventListener('click', () => {
         const theme = option.dataset.theme;
@@ -198,6 +198,7 @@ colorOptions.forEach(option => {
         // ...existing theme change code...
     });
 });
+*/
 
 // Load saved theme preference or set default theme
 const savedTheme = localStorage.getItem('preferred-theme') || 'light';
