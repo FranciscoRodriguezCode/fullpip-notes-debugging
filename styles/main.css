@@ -2,7 +2,6 @@
   --pip-full-height: min(24vh, 240px);
   --pip-full-padding: min(3vh, 30px);
   --buttons-height: min(8vh, 80px);
-  --theme-color: #ffffff;
 }
 
 html, body {
@@ -207,4 +206,4 @@ button {
 [data-theme="dark"] {
   background-color: #222;
   color: #fff;
-}
+} 

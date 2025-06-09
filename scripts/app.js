@@ -234,27 +234,3 @@ if (window.visualViewport) {
     setTimeout(handleViewportChange, 100);
   });
 }
-
-// Update manifest theme color
-function updateManifestThemeColor(color) {
-  const manifestLink = document.querySelector('link[rel="manifest"]');
-  if (manifestLink) {
-      fetch(manifestLink.href)
-          .then(response => response.json())
-          .then(manifest => {
-              manifest.theme_color = color;
-              const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-              const manifestURL = URL.createObjectURL(blob);
-              manifestLink.href = manifestURL;
-          });
-  }
-
-  // Also update the theme-color meta tag for immediate effect
-  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-  if (metaThemeColor) {
-      metaThemeColor.content = color;
-  }
-}
-
-// Call this function whenever your theme changes
-// Example: updateManifestThemeColor(getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim());
