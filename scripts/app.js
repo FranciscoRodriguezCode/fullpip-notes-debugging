@@ -171,6 +171,7 @@ function applyTheme(theme) {
   for (const [property, value] of Object.entries(themeVars)) {
     document.documentElement.style.setProperty(property, value);
   }
+  updateThemeColors(theme === 'dark');
 }
 // Update theme colors for meta tags
 function updateThemeColors(isDark) {
