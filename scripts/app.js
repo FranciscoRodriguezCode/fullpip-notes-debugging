@@ -173,6 +173,32 @@ function applyTheme(theme) {
   }
 }
 
+function updateThemeColors(isDark) {
+    const themeColor = isDark ? '#333333' : '#ffffff';
+    
+    // Update meta theme-color
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+        metaThemeColor.content = themeColor;
+    }
+
+    // Update status bar style for iOS
+    const statusBarStyle = isDark ? 'black-translucent' : 'default';
+    const statusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (statusBarMeta) {
+        statusBarMeta.content = statusBarStyle;
+    }
+}
+
+// Add this to your existing theme change handler
+colorOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        const theme = option.dataset.theme;
+        updateThemeColors(theme === 'dark');
+        // ...existing theme change code...
+    });
+});
+
 // Load saved theme preference or set default theme
 const savedTheme = localStorage.getItem('preferred-theme') || 'light';
 applyTheme(savedTheme);
