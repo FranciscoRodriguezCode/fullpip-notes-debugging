@@ -172,7 +172,7 @@ function applyTheme(theme) {
     document.documentElement.style.setProperty(property, value);
   }
 }
-
+// Update theme colors for meta tags
 function updateThemeColors(isDark) {
     const themeColor = isDark ? '#333333' : '#ffffff';
     
