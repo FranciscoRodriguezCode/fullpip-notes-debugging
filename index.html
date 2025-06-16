@@ -18,13 +18,7 @@
   </div>
 
   <div class="text-box-container" id="text-box-container">
-    <textarea 
-        class="text-box"
-        spellcheck="false" 
-        style="white-space: pre-wrap;"
-        placeholder="Start typing..."
-    ></textarea>
-    <div class="preview-overlay"></div>
+    <textarea class="text-box" id="note-area" placeholder="Start typing..."></textarea>
   </div>
 
   <div class="button-container">
@@ -51,10 +45,10 @@
     </div>
   </div>
 
-    <script src="/fullpip-notes-debugging/scripts/app.js"></script>
+    <script src="/fullpip-notes/scripts/app.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/fullpip-notes-debugging/service-worker.js')
+            navigator.serviceWorker.register('/fullpip-notes/service-worker.js')
                 .then(registration => console.log('ServiceWorker registered'))
                 .catch(err => console.log('ServiceWorker registration failed:', err));
         }

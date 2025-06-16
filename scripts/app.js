@@ -1,4 +1,4 @@
-const textBox = document.querySelector('.text-box');
+const textBox = document.getElementById('note-area');
 const downloadBtn = document.getElementById('download-btn');
 const copyBtn = document.getElementById('copy-btn');
 let filename = '';
@@ -44,28 +44,6 @@ textBox.addEventListener('input', () => {
   textBox.scrollTop = textBox.scrollHeight;
 });
 
-// Text formatting
-const previewOverlay = document.querySelector('.preview-overlay');
-
-textBox.addEventListener('input', () => {
-    const text = textBox.value;
-    
-    // Convert markdown to HTML
-    let formattedText = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*((?!\*)[^*]+)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br>');
-
-    // Update preview
-    previewOverlay.innerHTML = formattedText;
-    
-    // Restore cursor and scroll position
-    textBox.selectionStart = currentPos;
-    textBox.selectionEnd = currentPos;
-    textBox.scrollTop = scrollPos;
-  }
-);
-
 // Handle bullet points
 textBox.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
@@ -87,6 +65,42 @@ textBox.addEventListener('keydown', (e) => {
       }
     }
   }
+});
+
+// Handle formatting for bold and italic text
+textBox.addEventListener('input', () => {
+    const text = textBox.value;
+    const cursorPosition = textBox.selectionStart;
+    
+    // Format text while preserving cursor position
+    if (text.includes('**') || text.includes('*')) {
+        const formatted = text
+            .replace(/\*\*([^\*]+)\*\*/g, '$1')  // Show bold text without **
+            .replace(/\*([^\*]+)\*/g, '$1');      // Show italic text without *
+        
+        if (formatted !== text) {
+            textBox.value = formatted;
+            textBox.setSelectionRange(cursorPosition, cursorPosition);
+        }
+    }
+});
+
+// Add style application on keyup
+textBox.addEventListener('keyup', (e) => {
+    const text = textBox.value;
+    const selection = window.getSelection();
+    
+    if (text.includes('**')) {
+        // Apply bold style
+        textBox.style.fontWeight = 'bold';
+    } else if (text.includes('*')) {
+        // Apply italic style
+        textBox.style.fontStyle = 'italic';
+    } else {
+        // Reset styles
+        textBox.style.fontWeight = 'normal';
+        textBox.style.fontStyle = 'normal';
+    }
 });
 
 // Download functionality

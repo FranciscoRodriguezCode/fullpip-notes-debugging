@@ -206,26 +206,4 @@ button {
 [data-theme="dark"] {
   background-color: #222;
   color: #fff;
-}
-
-.preview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-  pointer-events: none;
-  white-space: pre-wrap;
-  background: transparent;
-}
-
-.preview-overlay strong {
-  font-weight: bold;
-  color: inherit;
-}
-
-.preview-overlay em {
-  font-style: italic;
-  color: inherit;
-}
+} 
