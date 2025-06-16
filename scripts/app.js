@@ -67,24 +67,6 @@ textBox.addEventListener('keydown', (e) => {
   }
 });
 
-// Handle formatting for bold and italic text
-textBox.addEventListener('input', () => {
-    const text = textBox.value;
-    const cursorPosition = textBox.selectionStart;
-    
-    // Format text while preserving cursor position
-    if (text.includes('**') || text.includes('*')) {
-        const formatted = text
-            .replace(/\*\*([^\*]+)\*\*/g, '$1')  // Show bold text without **
-            .replace(/\*([^\*]+)\*/g, '$1');      // Show italic text without *
-        
-        if (formatted !== text) {
-            textBox.value = formatted;
-            textBox.setSelectionRange(cursorPosition, cursorPosition);
-        }
-    }
-});
-
 // Text formatting handler
 function applyFormatting() {
     const textBox = document.querySelector('.text-box');
