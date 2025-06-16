@@ -44,6 +44,33 @@ textBox.addEventListener('input', () => {
   textBox.scrollTop = textBox.scrollHeight;
 });
 
+// Text formatting .
+let lastLength = textBox.value.length;
+textBox.addEventListener('input', () => {
+  const currentPos = textBox.selectionStart;
+  const text = textBox.value;
+  
+  // Only process if text actually changed
+  if (text.length !== lastLength) {
+    lastLength = text.length;
+    
+    // Store current scroll position
+    const scrollPos = textBox.scrollTop;
+    
+    // Check for markdown patterns
+    const boldPattern = /\*\*(.*?)\*\*/g;
+    const italicPattern = /\*(.*?)\*/g;
+    
+    // Apply formatting without changing the actual text
+    textBox.value = text;
+    
+    // Restore cursor and scroll position
+    textBox.selectionStart = currentPos;
+    textBox.selectionEnd = currentPos;
+    textBox.scrollTop = scrollPos;
+  }
+});
+
 // Handle bullet points
 textBox.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
