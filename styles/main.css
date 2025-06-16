@@ -220,12 +220,12 @@ button {
   background: transparent;
 }
 
-.preview strong {
+.preview-overlay strong {
   font-weight: bold;
   color: inherit;
 }
 
-.preview em {
+.preview-overlay em {
   font-style: italic;
   color: inherit;
 }
