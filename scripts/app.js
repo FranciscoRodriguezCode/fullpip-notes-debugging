@@ -86,41 +86,25 @@ textBox.addEventListener('input', () => {
 });
 
 // Text formatting handler
-textBox.addEventListener('input', function() {
-    const start = this.selectionStart;
-    const end = this.selectionEnd;
-    
-    // Check if text contains markdown
-    if (this.value.includes('**') || this.value.includes('*')) {
-        // Store current styles
-        const currentStyles = {
-            bold: this.style.fontWeight,
-            italic: this.style.fontStyle
-        };
+const applyMarkdownFormatting = (element) => {
+    const text = element.value;
+    const start = element.selectionStart;
+    const end = element.selectionEnd;
 
-        // Apply formatting
-        if (this.value.match(/\*\*.*\*\*/)) {
-            this.style.fontWeight = 'bold';
-        }
-        if (this.value.match(/\*[^*]+\*/)) {
-            this.style.fontStyle = 'italic';
-        }
+    // Check for bold and italic patterns
+    const containsBold = /\*\*[^*]+\*\*/.test(text);
+    const containsItalic = /\*[^*]+\*/.test(text);
 
-        // Reset if no formatting markers
-        if (!this.value.includes('**')) {
-            this.style.fontWeight = 'normal';
-        }
-        if (!this.value.match(/\*[^*]+\*/)) {
-            this.style.fontStyle = 'normal';
-        }
-    } else {
-        // Reset all styles if no markdown
-        this.style.fontWeight = 'normal';
-        this.style.fontStyle = 'normal';
-    }
+    // Apply styles based on markdown presence
+    element.style.fontWeight = containsBold ? 'bold' : 'normal';
+    element.style.fontStyle = containsItalic ? 'italic' : 'normal';
 
     // Restore cursor position
-    this.setSelectionRange(start, end);
+    element.setSelectionRange(start, end);
+};
+
+textBox.addEventListener('input', () => {
+    applyMarkdownFormatting(textBox);
 });
 
 // Download functionality
