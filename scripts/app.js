@@ -86,26 +86,30 @@ textBox.addEventListener('input', () => {
 });
 
 // Text formatting handler
-const applyMarkdownFormatting = (element) => {
-    const text = element.value;
-    const start = element.selectionStart;
-    const end = element.selectionEnd;
+function formatText() {
+    const textBox = document.querySelector('.text-box');
+    const text = textBox.value;
+    const cursorPos = textBox.selectionStart;
 
-    // Check for bold and italic patterns
-    const containsBold = /\*\*[^*]+\*\*/.test(text);
-    const containsItalic = /\*[^*]+\*/.test(text);
+    // Apply styles based on markdown
+    if (text.includes('**')) {
+        textBox.style.fontWeight = 'bold';
+    } else {
+        textBox.style.fontWeight = 'normal';
+    }
 
-    // Apply styles based on markdown presence
-    element.style.fontWeight = containsBold ? 'bold' : 'normal';
-    element.style.fontStyle = containsItalic ? 'italic' : 'normal';
+    if (text.match(/\*[^*]+\*/)) {
+        textBox.style.fontStyle = 'italic';
+    } else {
+        textBox.style.fontStyle = 'normal';
+    }
 
-    // Restore cursor position
-    element.setSelectionRange(start, end);
-};
+    // Maintain cursor position
+    textBox.setSelectionRange(cursorPos, cursorPos);
+}
 
-textBox.addEventListener('input', () => {
-    applyMarkdownFormatting(textBox);
-});
+textBox.addEventListener('input', formatText);
+textBox.addEventListener('keyup', formatText);
 
 // Download functionality
 downloadBtn.addEventListener('click', () => {
