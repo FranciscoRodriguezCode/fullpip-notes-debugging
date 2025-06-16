@@ -44,6 +44,33 @@ textBox.addEventListener('input', () => {
   textBox.scrollTop = textBox.scrollHeight;
 });
 
+// Text formatting
+let lastLength = textBox.value.length;
+textBox.addEventListener('input', () => {
+  const currentPos = textBox.selectionStart;
+  const text = textBox.value;
+  
+  // Only process if text actually changed
+  if (text.length !== lastLength) {
+    lastLength = text.length;
+    
+    // Store current scroll position
+    const scrollPos = textBox.scrollTop;
+    
+    // Check for markdown patterns
+    const boldPattern = /\*\*(.*?)\*\*/g;
+    const italicPattern = /\*(.*?)\*/g;
+    
+    // Apply formatting without changing the actual text
+    textBox.value = text;
+    
+    // Restore cursor and scroll position
+    textBox.selectionStart = currentPos;
+    textBox.selectionEnd = currentPos;
+    textBox.scrollTop = scrollPos;
+  }
+});
+
 // Handle bullet points
 textBox.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
@@ -252,27 +279,3 @@ if (window.visualViewport) {
     setTimeout(handleViewportChange, 100);
   });
 }
-
-// Text formatting
-textBox.addEventListener('input', () => {
-  const text = textBox.value;
-  const selectionStart = textBox.selectionStart;
-  const selectionEnd = textBox.selectionEnd;
-
-  // Format text with bold and italic markers
-  let formattedText = text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-  // Only update if formatting changed
-  if (formattedText !== text) {
-    const container = document.createElement('div');
-    container.innerHTML = formattedText;
-    
-    // Convert back to plain text but preserve formatting
-    textBox.value = container.textContent;
-    
-    // Restore cursor position
-    textBox.setSelectionRange(selectionStart, selectionEnd);
-  }
-});
