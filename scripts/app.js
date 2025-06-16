@@ -67,9 +67,9 @@ textBox.addEventListener('keydown', (e) => {
   }
 });
 
-// Text formatting handler
+// Text formatting handler (keep only this version)
 function applyFormatting() {
-    const textBox = document.querySelector('.text-box');
+    const textBox = document.getElementById('note-area');
     const text = textBox.value;
     const cursorPos = textBox.selectionStart;
 
@@ -92,14 +92,21 @@ function applyFormatting() {
 
     // Force redraw for iOS
     textBox.style.display = 'none';
-    textBox.offsetHeight; // Force reflow
-    textBox.style.display = 'block';
+    textBox.offsetHeight;
+    textBox.style.display = '';
 
     // Reset cursor position
     setTimeout(() => {
         textBox.setSelectionRange(cursorPos, cursorPos);
     }, 0);
 }
+
+// Add these event listeners right after the function
+document.addEventListener('DOMContentLoaded', () => {
+    const textBox = document.getElementById('note-area');
+    textBox.addEventListener('input', applyFormatting);
+    textBox.addEventListener('touchend', applyFormatting);
+});
 
 // Download functionality
 downloadBtn.addEventListener('click', () => {
@@ -158,43 +165,6 @@ copyBtn.addEventListener('click', () => {
     fallbackCopyToClipboard(textBox.value);
   }
 });
-
-function applyFormatting() {
-    const textBox = document.getElementById('note-area');
-    const text = textBox.value;
-    const cursorPos = textBox.selectionStart;
-
-    // Use -webkit prefix for Safari
-    if (text.match(/\*\*[^*]+\*\*/)) {
-        textBox.style.webkitFontWeight = 'bold';
-        textBox.style.fontWeight = 'bold';
-    } else {
-        textBox.style.webkitFontWeight = 'normal';
-        textBox.style.fontWeight = 'normal';
-    }
-
-    if (text.match(/\*[^*]+\*/)) {
-        textBox.style.webkitFontStyle = 'italic';
-        textBox.style.fontStyle = 'italic';
-    } else {
-        textBox.style.webkitFontStyle = 'normal';
-        textBox.style.fontStyle = 'normal';
-    }
-
-    // Force redraw for iOS
-    textBox.style.display = 'none';
-    textBox.offsetHeight;
-    textBox.style.display = '';
-
-    // Reset cursor position
-    setTimeout(() => {
-        textBox.setSelectionRange(cursorPos, cursorPos);
-    }, 0);
-}
-
-// Use getElementById to match your HTML structure
-textBox.addEventListener('input', applyFormatting);
-textBox.addEventListener('touchend', applyFormatting);
 
 // Theme handling
 const themeBtn = document.getElementById('theme-btn');
