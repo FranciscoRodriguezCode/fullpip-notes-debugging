@@ -67,30 +67,23 @@ textBox.addEventListener('keydown', (e) => {
   }
 });
 
-textBox.addEventListener('keyup', (e) => {
+textBox.addEventListener('input', (e) => {
     const text = textBox.value;
     const cursorPos = textBox.selectionStart;
     
-    // Find all bold and italic sections
-    const sections = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
-    
-    sections.forEach((section, i) => {
-        if (section.startsWith('**') && section.endsWith('**')) {
-            // Bold text
-            const boldText = section.slice(2, -2);
-            textBox.style.fontWeight = 'bold';
-        } else if (section.startsWith('*') && section.endsWith('*')) {
-            // Italic text
-            const italicText = section.slice(1, -1);
-            textBox.style.fontStyle = 'italic';
-        } else {
-            // Reset styles for normal text
-            textBox.style.fontWeight = 'normal';
-            textBox.style.fontStyle = 'normal';
-        }
-    });
+    // Apply text styles based on markdown syntax
+    if (text.includes('**')) {
+        // For bold text
+        textBox.style.cssText += 'font-weight: bold;';
+    } else if (text.includes('*')) {
+        // For italic text
+        textBox.style.cssText += 'font-style: italic;';
+    } else {
+        // Reset styles
+        textBox.style.cssText += 'font-weight: normal; font-style: normal;';
+    }
 
-    // Preserve cursor position
+    // Maintain cursor position
     textBox.setSelectionRange(cursorPos, cursorPos);
 });
 
