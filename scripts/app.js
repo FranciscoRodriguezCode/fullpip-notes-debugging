@@ -67,39 +67,32 @@ textBox.addEventListener('keydown', (e) => {
   }
 });
 
-// Text formatting handler (keep only this version)
-function applyFormatting() {
-    const textBox = document.getElementById('note-area');
+textBox.addEventListener('keyup', (e) => {
     const text = textBox.value;
     const cursorPos = textBox.selectionStart;
+    
+    // Find all bold and italic sections
+    const sections = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+    
+    sections.forEach((section, i) => {
+        if (section.startsWith('**') && section.endsWith('**')) {
+            // Bold text
+            const boldText = section.slice(2, -2);
+            textBox.style.fontWeight = 'bold';
+        } else if (section.startsWith('*') && section.endsWith('*')) {
+            // Italic text
+            const italicText = section.slice(1, -1);
+            textBox.style.fontStyle = 'italic';
+        } else {
+            // Reset styles for normal text
+            textBox.style.fontWeight = 'normal';
+            textBox.style.fontStyle = 'normal';
+        }
+    });
 
-    // Use -webkit prefix for Safari
-    if (text.match(/\*\*[^*]+\*\*/)) {
-        textBox.style.webkitFontWeight = 'bold';
-        textBox.style.fontWeight = 'bold';
-    } else {
-        textBox.style.webkitFontWeight = 'normal';
-        textBox.style.fontWeight = 'normal';
-    }
-
-    if (text.match(/\*[^*]+\*/)) {
-        textBox.style.webkitFontStyle = 'italic';
-        textBox.style.fontStyle = 'italic';
-    } else {
-        textBox.style.webkitFontStyle = 'normal';
-        textBox.style.fontStyle = 'normal';
-    }
-
-    // Force redraw for iOS
-    textBox.style.display = 'none';
-    textBox.offsetHeight;
-    textBox.style.display = '';
-
-    // Reset cursor position
-    setTimeout(() => {
-        textBox.setSelectionRange(cursorPos, cursorPos);
-    }, 0);
-}
+    // Preserve cursor position
+    textBox.setSelectionRange(cursorPos, cursorPos);
+});
 
 // Add these event listeners right after the function
 document.addEventListener('DOMContentLoaded', () => {
