@@ -86,29 +86,30 @@ textBox.addEventListener('input', () => {
 });
 
 // Text formatting handler
-textBox.addEventListener('input', function(e) {
-    const cursorPos = this.selectionStart;
+textBox.addEventListener('keyup', function(e) {
     const text = this.value;
-
-    // Check for markdown patterns
-    const boldRegex = /\*\*(.*?)\*\*/g;
-    const italicRegex = /(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/g;
-
-    // Find matches and apply formatting
-    let formattedText = text;
-    const boldMatches = Array.from(text.matchAll(boldRegex));
-    const italicMatches = Array.from(text.matchAll(italicRegex));
-
-    // Apply styling using data attributes
-    if (boldMatches.length > 0) {
-        this.dataset.format = this.dataset.format === 'italic' ? 'both' : 'bold';
-    } else if (italicMatches.length > 0) {
-        this.dataset.format = this.dataset.format === 'bold' ? 'both' : 'italic';
+    const cursorPos = this.selectionStart;
+    
+    // Check for formatting patterns
+    const hasBold = text.match(/\*\*(.*?)\*\*/);
+    const hasItalic = text.match(/\*([^*]+)\*/);
+    
+    // Apply formatting styles
+    if (hasBold && hasItalic) {
+        this.style.fontWeight = 'bold';
+        this.style.fontStyle = 'italic';
+    } else if (hasBold) {
+        this.style.fontWeight = 'bold';
+        this.style.fontStyle = 'normal';
+    } else if (hasItalic) {
+        this.style.fontWeight = 'normal';
+        this.style.fontStyle = 'italic';
     } else {
-        delete this.dataset.format;
+        this.style.fontWeight = 'normal';
+        this.style.fontStyle = 'normal';
     }
-
-    // Restore cursor position
+    
+    // Maintain cursor position
     this.setSelectionRange(cursorPos, cursorPos);
 });
 
