@@ -69,30 +69,20 @@ textBox.addEventListener('keydown', (e) => {
 
 textBox.addEventListener('input', (e) => {
     const text = textBox.value;
-    const cursorPos = textBox.selectionStart;
     
     // Apply text styles based on markdown syntax
     if (text.includes('**')) {
         // For bold text
-        textBox.style.cssText += 'font-weight: bold;';
+        textBox.style = 'font-weight: bold;';
     } else if (text.includes('*')) {
         // For italic text
-        textBox.style.cssText += 'font-style: italic;';
+        textBox.style = 'font-style: italic;';
     } else {
         // Reset styles
-        textBox.style.cssText += 'font-weight: normal; font-style: normal;';
+        textBox.style = 'font-weight: normal; font-style: normal;';
     }
-
-    // Maintain cursor position
-    textBox.setSelectionRange(cursorPos, cursorPos);
 });
 
-// Add these event listeners right after the function
-document.addEventListener('DOMContentLoaded', () => {
-    const textBox = document.getElementById('note-area');
-    textBox.addEventListener('input', applyFormatting);
-    textBox.addEventListener('touchend', applyFormatting);
-});
 
 // Download functionality
 downloadBtn.addEventListener('click', () => {
