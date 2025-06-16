@@ -252,3 +252,27 @@ if (window.visualViewport) {
     setTimeout(handleViewportChange, 100);
   });
 }
+
+// Text formatting
+textBox.addEventListener('input', () => {
+  const text = textBox.value;
+  const selectionStart = textBox.selectionStart;
+  const selectionEnd = textBox.selectionEnd;
+
+  // Format text with bold and italic markers
+  let formattedText = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+  // Only update if formatting changed
+  if (formattedText !== text) {
+    const container = document.createElement('div');
+    container.innerHTML = formattedText;
+    
+    // Convert back to plain text but preserve formatting
+    textBox.value = container.textContent;
+    
+    // Restore cursor position
+    textBox.setSelectionRange(selectionStart, selectionEnd);
+  }
+});
