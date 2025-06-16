@@ -44,7 +44,7 @@ textBox.addEventListener('input', () => {
   textBox.scrollTop = textBox.scrollHeight;
 });
 
-// Text formatting
+// Text formatting .
 let lastLength = textBox.value.length;
 textBox.addEventListener('input', () => {
   const currentPos = textBox.selectionStart;
