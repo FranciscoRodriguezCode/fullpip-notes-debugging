@@ -67,20 +67,50 @@ textBox.addEventListener('keydown', (e) => {
   }
 });
 
-textBox.addEventListener('input', (e) => {
-    const text = textBox.value;
+
+textBox.addEventListener('keyup', (e) => {
+    // Get selected text
+    const start = textBox.selectionStart;
+    const end = textBox.selectionEnd;
+    const selection = textBox.value.substring(start, end);
     
-    // Apply text styles based on markdown syntax
-    if (text.includes('**')) {
-        // For bold text
-        textBox.style = 'font-weight: bold;';
-    } else if (text.includes('*')) {
-        // For italic text
-        textBox.style = 'font-style: italic;';
-    } else {
-        // Reset styles
-        textBox.style = 'font-weight: normal; font-style: normal;';
+    // Check if text is selected and asterisk key is pressed
+    if (selection && e.key === '*') {
+        const beforeSelection = textBox.value.substring(0, start);
+        const afterSelection = textBox.value.substring(end);
+        
+        // Check if double asterisk for bold
+        if (textBox.value[start-1] === '*') {
+            // Apply bold formatting
+            textBox.value = beforeSelection + '**' + selection + '**' + afterSelection;
+            textBox.setSelectionRange(start + 2, end + 2);
+        } else {
+            // Apply italic formatting
+            textBox.value = beforeSelection + '*' + selection + '*' + afterSelection;
+            textBox.setSelectionRange(start + 1, end + 1);
+        }
     }
+});
+
+// Add text style handler
+textBox.addEventListener('input', () => {
+    const text = textBox.value;
+    const cursorPos = textBox.selectionStart;
+    
+    // Find and style text between markers
+    if (text.match(/\*\*.*\*\*/)) {
+        textBox.style.fontWeight = 'bold';
+    } else {
+        textBox.style.fontWeight = 'normal';
+    }
+    
+    if (text.match(/\*[^*]+\*/)) {
+        textBox.style.fontStyle = 'italic';
+    } else {
+        textBox.style.fontStyle = 'normal';
+    }
+    
+    textBox.setSelectionRange(cursorPos, cursorPos);
 });
 
 
