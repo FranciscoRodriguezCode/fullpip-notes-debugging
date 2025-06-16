@@ -85,22 +85,31 @@ textBox.addEventListener('input', () => {
     }
 });
 
-// Add style application on keyup
-textBox.addEventListener('keyup', (e) => {
-    const text = textBox.value;
-    const selection = window.getSelection();
-    
-    if (text.includes('**')) {
-        // Apply bold style
-        textBox.style.fontWeight = 'bold';
-    } else if (text.includes('*')) {
-        // Apply italic style
-        textBox.style.fontStyle = 'italic';
+// Text formatting handler
+textBox.addEventListener('input', function(e) {
+    const cursorPos = this.selectionStart;
+    const text = this.value;
+
+    // Check for markdown patterns
+    const boldRegex = /\*\*(.*?)\*\*/g;
+    const italicRegex = /(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/g;
+
+    // Find matches and apply formatting
+    let formattedText = text;
+    const boldMatches = Array.from(text.matchAll(boldRegex));
+    const italicMatches = Array.from(text.matchAll(italicRegex));
+
+    // Apply styling using data attributes
+    if (boldMatches.length > 0) {
+        this.dataset.format = this.dataset.format === 'italic' ? 'both' : 'bold';
+    } else if (italicMatches.length > 0) {
+        this.dataset.format = this.dataset.format === 'bold' ? 'both' : 'italic';
     } else {
-        // Reset styles
-        textBox.style.fontWeight = 'normal';
-        textBox.style.fontStyle = 'normal';
+        delete this.dataset.format;
     }
+
+    // Restore cursor position
+    this.setSelectionRange(cursorPos, cursorPos);
 });
 
 // Download functionality

@@ -207,3 +207,17 @@ button {
   background-color: #222;
   color: #fff;
 } 
+
+/* Add text formatting styles */
+.text-box[data-format="bold"] {
+    font-weight: bold;
+}
+
+.text-box[data-format="italic"] {
+    font-style: italic;
+}
+
+.text-box[data-format="both"] {
+    font-weight: bold;
+    font-style: italic;
+}
