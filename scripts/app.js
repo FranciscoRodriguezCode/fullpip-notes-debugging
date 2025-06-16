@@ -1,4 +1,4 @@
-const textBox = document.getElementById('note-area');
+const textBox = document.querySelector('.text-box');
 const downloadBtn = document.getElementById('download-btn');
 const copyBtn = document.getElementById('copy-btn');
 let filename = '';
