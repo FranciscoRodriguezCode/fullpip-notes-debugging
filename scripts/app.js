@@ -86,31 +86,41 @@ textBox.addEventListener('input', () => {
 });
 
 // Text formatting handler
-textBox.addEventListener('keyup', function(e) {
-    const text = this.value;
-    const cursorPos = this.selectionStart;
+textBox.addEventListener('input', function() {
+    const start = this.selectionStart;
+    const end = this.selectionEnd;
     
-    // Check for formatting patterns
-    const hasBold = text.match(/\*\*(.*?)\*\*/);
-    const hasItalic = text.match(/\*([^*]+)\*/);
-    
-    // Apply formatting styles
-    if (hasBold && hasItalic) {
-        this.style.fontWeight = 'bold';
-        this.style.fontStyle = 'italic';
-    } else if (hasBold) {
-        this.style.fontWeight = 'bold';
-        this.style.fontStyle = 'normal';
-    } else if (hasItalic) {
-        this.style.fontWeight = 'normal';
-        this.style.fontStyle = 'italic';
+    // Check if text contains markdown
+    if (this.value.includes('**') || this.value.includes('*')) {
+        // Store current styles
+        const currentStyles = {
+            bold: this.style.fontWeight,
+            italic: this.style.fontStyle
+        };
+
+        // Apply formatting
+        if (this.value.match(/\*\*.*\*\*/)) {
+            this.style.fontWeight = 'bold';
+        }
+        if (this.value.match(/\*[^*]+\*/)) {
+            this.style.fontStyle = 'italic';
+        }
+
+        // Reset if no formatting markers
+        if (!this.value.includes('**')) {
+            this.style.fontWeight = 'normal';
+        }
+        if (!this.value.match(/\*[^*]+\*/)) {
+            this.style.fontStyle = 'normal';
+        }
     } else {
+        // Reset all styles if no markdown
         this.style.fontWeight = 'normal';
         this.style.fontStyle = 'normal';
     }
-    
-    // Maintain cursor position
-    this.setSelectionRange(cursorPos, cursorPos);
+
+    // Restore cursor position
+    this.setSelectionRange(start, end);
 });
 
 // Download functionality
