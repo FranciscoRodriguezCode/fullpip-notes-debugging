@@ -135,19 +135,20 @@ body {
 
 .text-box {
   width: 100%;
-  height: 100%;
-  border: var(--textarea-border);
+  height: 100vh;
+  padding: 10px;
   background: var(--textarea-bg);
   color: var(--text-color);
-  font-size: max(16px, 3vmin);
-  line-height: 1.2;
-  padding: 8px;
-  box-sizing: border-box;
-  resize: none;
+  border: 1px solid var(--textarea-border);
+  outline: none;
   overflow-y: auto;
-  text-indent: 0;
-  -webkit-appearance: none;
-  appearance: none;
+  white-space: pre-wrap;
+  font-family: -apple-system, system-ui, sans-serif;
+}
+
+.text-box:empty:before {
+  content: attr(placeholder);
+  color: #999;
 }
 
 .text-box:focus {
@@ -206,4 +207,26 @@ button {
 [data-theme="dark"] {
   background-color: #222;
   color: #fff;
-} 
+}
+
+.format-controls {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  justify-content: center;
+  background: var(--background-color);
+}
+
+.format-controls button {
+  padding: 4px 12px;
+  background: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: var(--text-color);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.format-controls button.active {
+  background: var(--textarea-border);
+  color: var(--textarea-bg);
+}

@@ -1,34 +1,58 @@
-const textBox = document.getElementById('note-area');
+const noteArea = document.getElementById('note-area');
 const downloadBtn = document.getElementById('download-btn');
 const copyBtn = document.getElementById('copy-btn');
+const boldBtn = document.getElementById('bold-btn');
+const italicBtn = document.getElementById('italic-btn');
+const underlineBtn = document.getElementById('underline-btn');
 let filename = '';
+
+// Format buttons functionality
+function formatText(command) {
+    document.execCommand(command, false, null);
+    noteArea.focus();
+}
+
+boldBtn.addEventListener('click', () => {
+    formatText('bold');
+    boldBtn.classList.toggle('active');
+});
+
+italicBtn.addEventListener('click', () => {
+    formatText('italic');
+    italicBtn.classList.toggle('active');
+});
+
+underlineBtn.addEventListener('click', () => {
+    formatText('underline');
+    underlineBtn.classList.toggle('active');
+});
 
 // Show filename modal on load
 window.addEventListener('load', () => {
-  const modal = document.getElementById('filename-modal');
-  const filenameInput = document.getElementById('filename-input');
-  const continueBtn = document.getElementById('filename-continue');
+    const modal = document.getElementById('filename-modal');
+    const filenameInput = document.getElementById('filename-input');
+    const continueBtn = document.getElementById('filename-continue');
       
-  modal.style.display = 'flex';
-  filenameInput.focus();
+    modal.style.display = 'flex';
+    filenameInput.focus();
 
-  function handleFilenameSubmit() {
-    filename = filenameInput.value.trim() || 'Untitled Document';
-    modal.style.display = 'none';
-    textBox.value = `${filename}\n\n`;
-    textBox.focus();
-  }
-
-  continueBtn.addEventListener('click', handleFilenameSubmit);
-  filenameInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleFilenameSubmit();
+    function handleFilenameSubmit() {
+        filename = filenameInput.value.trim() || 'Untitled Document';
+        modal.style.display = 'none';
+        noteArea.innerHTML = `${filename}<br><br>`;
+        noteArea.focus();
     }
-  });
+
+    continueBtn.addEventListener('click', handleFilenameSubmit);
+    filenameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleFilenameSubmit();
+        }
+    });
 });
 
 // Prevent scroll on focus
-textBox.addEventListener('focus', (e) => {
+noteArea.addEventListener('focus', (e) => {
   e.preventDefault();
   const preventScroll = () => {
     window.scrollTo(0, 0);
@@ -40,14 +64,14 @@ textBox.addEventListener('focus', (e) => {
 });
 
 // Auto-scroll textarea
-textBox.addEventListener('input', () => {
-  textBox.scrollTop = textBox.scrollHeight;
+noteArea.addEventListener('input', () => {
+  noteArea.scrollTop = noteArea.scrollHeight;
 });
 
 // Handle bullet points
-textBox.addEventListener('keydown', (e) => {
+noteArea.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
-    const lines = textBox.value.split('\n');
+    const lines = noteArea.value.split('\n');
     const lastLine = lines[lines.length - 1];
     const isBullet = lastLine.startsWith('- ');
     const isEmptyBullet = lastLine.trim() === '-' || lastLine.trim() === '- ';
@@ -56,12 +80,12 @@ textBox.addEventListener('keydown', (e) => {
       e.preventDefault();
       if (isEmptyBullet) {
         // Remove the empty bullet point and add a new line
-        textBox.value = textBox.value.slice(0, -lastLine.length - 1) + '\n';
-        textBox.scrollTop = textBox.scrollHeight;
+        noteArea.value = noteArea.value.slice(0, -lastLine.length - 1) + '\n';
+        noteArea.scrollTop = noteArea.scrollHeight;
       } else {
         // Add a new bullet point
-        textBox.value = textBox.value + '\n- ';
-        textBox.scrollTop = textBox.scrollHeight;
+        noteArea.value = noteArea.value + '\n- ';
+        noteArea.scrollTop = noteArea.scrollHeight;
       }
     }
   }
@@ -69,16 +93,16 @@ textBox.addEventListener('keydown', (e) => {
 
 // Download functionality
 downloadBtn.addEventListener('click', () => {
-  const text = textBox.value;
-  const blob = new Blob([text], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${filename || 'notes'}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+    const plainText = noteArea.innerText;
+    const blob = new Blob([plainText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename || 'notes'}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 });
 
 // Clipboard functionality
@@ -108,21 +132,21 @@ function fallbackCopyToClipboard(text) {
 }
 
 copyBtn.addEventListener('click', () => {
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(textBox.value)
-      .then(() => {
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => {
-          copyBtn.textContent = originalText;
-        }, 2000);
-      })
-      .catch(() => {
-        fallbackCopyToClipboard(textBox.value);
-      });
-  } else {
-    fallbackCopyToClipboard(textBox.value);
-  }
+    const plainText = noteArea.innerText;
+    
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(plainText)
+            .then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            })
+            .catch(() => fallbackCopyToClipboard(plainText));
+    } else {
+        fallbackCopyToClipboard(plainText);
+    }
 });
 
 // Theme handling
@@ -197,58 +221,46 @@ applyTheme(savedTheme);
 
 // Handle viewport changes
 if (window.visualViewport) {
-  let maxVisualHeight = window.innerHeight;
+    let maxVisualHeight = window.innerHeight;
       
-  function handleViewportChange() {
-    const visualHeight = window.visualViewport.height;
-    document.documentElement.style.height = `${visualHeight}px`;
-    document.body.style.height = `${visualHeight}px`;
+    function handleViewportChange() {
+        const visualHeight = window.visualViewport.height;
+        document.documentElement.style.height = `${visualHeight}px`;
+        document.body.style.height = `${visualHeight}px`;
+        
+        const buttonContainer = document.querySelector('.button-container');
+        const textBoxContainer = document.querySelector('.text-box-container');
 
-    // Update max height if current height is larger
-    if (visualHeight > maxVisualHeight) {
-      maxVisualHeight = visualHeight;
+        if (visualHeight < maxVisualHeight * 0.7) {
+            buttonContainer.style.display = 'none';
+            textBoxContainer.style.marginBottom = '0';
+            
+            const pipHeight = document.querySelector('.pip-container').offsetHeight;
+            const topSpacerHeight = document.querySelector('.fullpip-top-spacer').offsetHeight;
+            const keyboardPadding = 20;
+            const availableHeight = visualHeight - (pipHeight + topSpacerHeight + keyboardPadding);
+            
+            textBoxContainer.style.position = 'fixed';
+            textBoxContainer.style.top = `${pipHeight + topSpacerHeight}px`;
+            textBoxContainer.style.height = `${availableHeight}px`;
+            textBoxContainer.style.left = '0';
+            textBoxContainer.style.right = '0';
+        } else {
+            buttonContainer.style.display = 'flex';
+            textBoxContainer.style.position = '';
+            textBoxContainer.style.top = '';
+            textBoxContainer.style.height = '';
+            textBoxContainer.style.left = '';
+            textBoxContainer.style.right = '';
+            textBoxContainer.style.marginBottom = 'var(--pip-full-padding)';
+        }
     }
 
-    // Check if keyboard is likely open (using 70% threshold)
-    const keyboardThreshold = maxVisualHeight * 0.7;
-    const isKeyboardOpen = visualHeight < keyboardThreshold;
-
-    const buttonContainer = document.querySelector('.button-container');
-    const textBoxContainer = document.querySelector('.text-box-container');
-
-    if (isKeyboardOpen) {
-      buttonContainer.style.display = 'none';
-      textBoxContainer.style.marginBottom = '0';
-          
-      // Calculate remaining space and set text box height
-      const pipHeight = document.querySelector('.pip-container').offsetHeight;
-      const topSpacerHeight = document.querySelector('.fullpip-top-spacer').offsetHeight;
-      // Add padding to prevent overlap with keyboard
-      const keyboardPadding = 20; // Adjust this value if needed
-      const availableHeight = visualHeight - (pipHeight + topSpacerHeight + keyboardPadding);
-          
-      textBoxContainer.style.position = 'fixed';
-      textBoxContainer.style.top = `${pipHeight + topSpacerHeight}px`;
-      textBoxContainer.style.height = `${availableHeight}px`;
-      textBoxContainer.style.left = '0';
-      textBoxContainer.style.right = '0';
-    } else {
-      buttonContainer.style.display = 'flex';
-      textBoxContainer.style.position = '';
-      textBoxContainer.style.top = '';
-      textBoxContainer.style.height = '';
-      textBoxContainer.style.left = '';
-      textBoxContainer.style.right = '';
-      textBoxContainer.style.marginBottom = 'var(--pip-full-padding)';
-    }
-  }
-
-  window.visualViewport.addEventListener('resize', handleViewportChange);
-  window.visualViewport.addEventListener('scroll', handleViewportChange);
-      
-  // Initial setup
-  window.addEventListener('load', () => {
-    maxVisualHeight = window.innerHeight;
-    setTimeout(handleViewportChange, 100);
-  });
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    window.visualViewport.addEventListener('scroll', handleViewportChange);
+    
+    window.addEventListener('load', () => {
+        maxVisualHeight = window.innerHeight;
+        setTimeout(handleViewportChange, 100);
+    });
 }
