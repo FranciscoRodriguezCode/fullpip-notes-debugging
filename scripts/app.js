@@ -3,6 +3,38 @@ const downloadBtn = document.getElementById('download-btn');
 const copyBtn = document.getElementById('copy-btn');
 let filename = '';
 
+// Allows Bold and Italic formatting in the text area
+function updateFormattedText() {
+    const text = textBox.value;
+    const cursorPos = textBox.selectionStart;
+
+    // Check for sections of text between markers
+    const sections = text.split(/(\*\*.*?\*\*|\*[^*].*?\*)/g);
+    
+    sections.forEach((section) => {
+        if (section.startsWith('**') && section.endsWith('**')) {
+            // Bold: text between double asterisks
+            const content = section.slice(2, -2);
+            textBox.style.fontWeight = 'bold';
+        } else if (section.startsWith('*') && section.endsWith('*') && !section.startsWith('**')) {
+            // Italic: text between single asterisks (but not double)
+            const content = section.slice(1, -1);
+            textBox.style.fontStyle = 'italic';
+        } else {
+            // Reset styles for normal text
+            textBox.style.fontWeight = 'normal';
+            textBox.style.fontStyle = 'normal';
+        }
+    });
+
+    // Preserve cursor position
+    textBox.setSelectionRange(cursorPos, cursorPos);
+}
+
+// Add these event listeners
+textBox.addEventListener('input', updateFormattedText);
+textBox.addEventListener('keyup', updateFormattedText);
+
 // Show filename modal on load
 window.addEventListener('load', () => {
   const modal = document.getElementById('filename-modal');
@@ -65,38 +97,9 @@ textBox.addEventListener('keydown', (e) => {
       }
     }
   }
-});
-
-textBox.addEventListener('bold', (e) => {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    const selectedText = range.toString();
-    if (selectedText) {
-      const boldText = `**${selectedText}**`;
-      range.deleteContents();
-      range.insertNode(document.createTextNode(boldText));
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
 }
 );
 
-textBox.addEventListener('italic', (e) => {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    const selectedText = range.toString();
-    if (selectedText) {
-      const italicText = `*${selectedText}*`;
-      range.deleteContents();
-      range.insertNode(document.createTextNode(italicText));
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
-});
 
 // Download functionality
 downloadBtn.addEventListener('click', () => {
