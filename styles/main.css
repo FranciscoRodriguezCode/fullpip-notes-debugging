@@ -137,6 +137,7 @@ body {
   width: 100%;
   height: 100%;
   border: var(--textarea-border);
+  border-radius: 4px;
   background: var(--textarea-bg);
   color: var(--text-color);
   font-size: max(16px, 3vmin);
@@ -213,6 +214,7 @@ button {
 [data-theme="dark"] {
   background-color: #222;
   color: #fff;
+  border: 1px solid #d1d1d1; /* Added border for better visibility */
 }
 
 .format-controls {

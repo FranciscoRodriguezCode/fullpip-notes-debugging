@@ -70,25 +70,28 @@ noteArea.addEventListener('input', () => {
 
 // Handle bullet points
 noteArea.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    const lines = noteArea.value.split('\n');
-    const lastLine = lines[lines.length - 1];
-    const isBullet = lastLine.startsWith('- ');
-    const isEmptyBullet = lastLine.trim() === '-' || lastLine.trim() === '- ';
+    if (e.key === 'Enter') {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        const currentLine = range.commonAncestorContainer;
         
-    if (isBullet) {
-      e.preventDefault();
-      if (isEmptyBullet) {
-        // Remove the empty bullet point and add a new line
-        noteArea.value = noteArea.value.slice(0, -lastLine.length - 1) + '\n';
-        noteArea.scrollTop = noteArea.scrollHeight;
-      } else {
-        // Add a new bullet point
-        noteArea.value = noteArea.value + '\n- ';
-        noteArea.scrollTop = noteArea.scrollHeight;
-      }
+        // Check if current line starts with bullet
+        const isBullet = currentLine.textContent.trimStart().startsWith('- ');
+        const isEmptyBullet = currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ';
+        
+        if (isBullet) {
+            e.preventDefault();
+            if (isEmptyBullet) {
+                // Remove empty bullet
+                currentLine.textContent = '';
+                document.execCommand('insertLineBreak');
+            } else {
+                // Add new bullet point
+                document.execCommand('insertLineBreak');
+                document.execCommand('insertText', false, '- ');
+            }
+        }
     }
-  }
 });
 
 // Download functionality
