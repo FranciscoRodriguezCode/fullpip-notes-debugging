@@ -106,48 +106,65 @@ downloadBtn.addEventListener('click', () => {
 });
 
 // Clipboard functionality
-function fallbackCopyToClipboard(text) {
-  const textArea = document.createElement('textarea');
-  textArea.value = text;
-  textArea.style.position = 'fixed';
-  textArea.style.top = '0';
-  textArea.style.left = '-9999px';
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
-
-  try {
-    document.execCommand('copy');
-    const originalText = copyBtn.textContent;
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => {
-      copyBtn.textContent = originalText;
-    }, 2000);
-  } catch (err) {
-    console.error('Fallback clipboard copy failed:', err);
-    alert('Copy failed. Please try selecting and copying manually.');
-  }
-
-  document.body.removeChild(textArea);
-}
-
-copyBtn.addEventListener('click', () => {
-    const plainText = noteArea.innerText;
+copyBtn.addEventListener('click', async () => {
+    const formattedContent = noteArea.innerHTML;
     
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(plainText)
-            .then(() => {
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                }, 2000);
-            })
-            .catch(() => fallbackCopyToClipboard(plainText));
-    } else {
-        fallbackCopyToClipboard(plainText);
+    try {
+        await navigator.clipboard.writeText(formattedContent);
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+        }, 2000);
+    } catch (err) {
+        // Fallback for formatting support
+        const clipboardItem = new ClipboardItem({
+            'text/html': new Blob([formattedContent], { type: 'text/html' }),
+            'text/plain': new Blob([noteArea.innerText], { type: 'text/plain' })
+        });
+        
+        try {
+            await navigator.clipboard.write([clipboardItem]);
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        } catch (err) {
+            fallbackCopyToClipboard(noteArea.innerText);
+        }
     }
 });
+
+// Update fallback function
+function fallbackCopyToClipboard(text) {
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = text;
+    tempElement.style.position = 'fixed';
+    tempElement.style.top = '0';
+    tempElement.style.left = '-9999px';
+    document.body.appendChild(tempElement);
+    
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(tempElement);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    try {
+        document.execCommand('copy');
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+        }, 2000);
+    } catch (err) {
+        console.error('Fallback clipboard copy failed:', err);
+        alert('Copy failed. Please try selecting and copying manually.');
+    }
+
+    document.body.removeChild(tempElement);
+}
 
 // Theme handling
 const themeBtn = document.getElementById('theme-btn');
