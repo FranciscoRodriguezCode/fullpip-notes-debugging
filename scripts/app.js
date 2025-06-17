@@ -3,37 +3,43 @@ const downloadBtn = document.getElementById('download-btn');
 const copyBtn = document.getElementById('copy-btn');
 let filename = '';
 
-// Allows Bold and Italic formatting in the text area
-function updateFormattedText() {
-    const text = textBox.value;
-    const cursorPos = textBox.selectionStart;
+// Add after textBox definition
+const boldBtn = document.getElementById('bold-btn');
+const italicBtn = document.getElementById('italic-btn');
+const underlineBtn = document.getElementById('underline-btn');
 
-    // Check for sections of text between markers
-    const sections = text.split(/(\*\*.*?\*\*|\*[^*].*?\*)/g);
-    
-    sections.forEach((section) => {
-        if (section.startsWith('**') && section.endsWith('**')) {
-            // Bold: text between double asterisks
-            const content = section.slice(2, -2);
-            textBox.style.fontWeight = 'bold';
-        } else if (section.startsWith('*') && section.endsWith('*') && !section.startsWith('**')) {
-            // Italic: text between single asterisks (but not double)
-            const content = section.slice(1, -1);
-            textBox.style.fontStyle = 'italic';
-        } else {
-            // Reset styles for normal text
-            textBox.style.fontWeight = 'normal';
-            textBox.style.fontStyle = 'normal';
-        }
-    });
+let formatting = {
+    bold: false,
+    italic: false,
+    underline: false
+};
 
-    // Preserve cursor position
-    textBox.setSelectionRange(cursorPos, cursorPos);
+function updateTextStyle() {
+    textBox.style.fontWeight = formatting.bold ? 'bold' : 'normal';
+    textBox.style.fontStyle = formatting.italic ? 'italic' : 'normal';
+    textBox.style.textDecoration = formatting.underline ? 'underline' : 'none';
 }
 
-// Add these event listeners
-textBox.addEventListener('input', updateFormattedText);
-textBox.addEventListener('keyup', updateFormattedText);
+boldBtn.addEventListener('click', () => {
+    formatting.bold = !formatting.bold;
+    boldBtn.classList.toggle('active');
+    updateTextStyle();
+    textBox.focus();
+});
+
+italicBtn.addEventListener('click', () => {
+    formatting.italic = !formatting.italic;
+    italicBtn.classList.toggle('active');
+    updateTextStyle();
+    textBox.focus();
+});
+
+underlineBtn.addEventListener('click', () => {
+    formatting.underline = !formatting.underline;
+    underlineBtn.classList.toggle('active');
+    updateTextStyle();
+    textBox.focus();
+});
 
 // Show filename modal on load
 window.addEventListener('load', () => {
