@@ -148,8 +148,6 @@ body {
   text-indent: 0;
   -webkit-appearance: none;
   appearance: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
 }
 
 .text-box:focus {
@@ -209,27 +207,3 @@ button {
   background-color: #222;
   color: #fff;
 } 
-
-.format-buttons {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    justify-content: center;
-    background: var(--background-color);
-}
-
-.format-btn {
-    padding: 5px 10px;
-    background: var(--button-bg);
-    border: 1px solid var(--button-border);
-    color: var(--text-color);
-    cursor: pointer;
-    border-radius: 4px;
-    min-width: 30px;
-    transition: background color 0.2s;
-}
-
-.format-btn.active {
-    background: var(--textarea-border);
-    color: var(--button-bg);
-}

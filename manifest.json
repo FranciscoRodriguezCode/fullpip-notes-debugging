@@ -1,6 +1,6 @@
 {
-    "name": "FullPiP Notes",
-    "short_name": "FullPiP Notes",
+    "name": "FullPiP Debug",
+    "short_name": "FullPiP Debug",
     "start_url": "/fullpip-notes-debugging/",
     "scope": "/fullpip-notes-debugging/",
     "display": "standalone",

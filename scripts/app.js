@@ -3,55 +3,6 @@ const downloadBtn = document.getElementById('download-btn');
 const copyBtn = document.getElementById('copy-btn');
 let filename = '';
 
-// Add after initial textBox definition
-const boldBtn = document.getElementById('bold-btn');
-const italicBtn = document.getElementById('italic-btn');
-const underlineBtn = document.getElementById('underline-btn');
-
-// Track formatting state
-let formatting = {
-    bold: false,
-    italic: false,
-    underline: false
-};
-
-// Update text styles and preserve cursor position
-function updateTextStyle() {
-    const cursorPos = textBox.selectionStart;
-    const selectionEnd = textBox.selectionEnd;
-    
-    // Apply combined styles
-    let styles = [];
-    if (formatting.bold) styles.push('font-weight: bold');
-    if (formatting.italic) styles.push('font-style: italic');
-    if (formatting.underline) styles.push('text-decoration: underline');
-    
-    textBox.style.cssText = styles.join(';');
-    
-    // Restore cursor position/selection
-    textBox.setSelectionRange(cursorPos, selectionEnd);
-    textBox.focus();
-}
-
-// Button event listeners
-boldBtn.addEventListener('click', () => {
-    formatting.bold = !formatting.bold;
-    boldBtn.classList.toggle('active');
-    updateTextStyle();
-});
-
-italicBtn.addEventListener('click', () => {
-    formatting.italic = !formatting.italic;
-    italicBtn.classList.toggle('active');
-    updateTextStyle();
-});
-
-underlineBtn.addEventListener('click', () => {
-    formatting.underline = !formatting.underline;
-    underlineBtn.classList.toggle('active');
-    updateTextStyle();
-});
-
 // Show filename modal on load
 window.addEventListener('load', () => {
   const modal = document.getElementById('filename-modal');
@@ -114,9 +65,7 @@ textBox.addEventListener('keydown', (e) => {
       }
     }
   }
-}
-);
-
+});
 
 // Download functionality
 downloadBtn.addEventListener('click', () => {
