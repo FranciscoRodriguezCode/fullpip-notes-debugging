@@ -36,10 +36,25 @@ window.addEventListener('load', () => {
     modal.style.display = 'flex';
     filenameInput.focus();
 
+    // Update the handleFilenameSubmit function
     function handleFilenameSubmit() {
         filename = filenameInput.value.trim() || 'Untitled Document';
         modal.style.display = 'none';
+        
+        // Add title with proper spacing
         noteArea.innerHTML = `${filename}<br><br>`;
+        
+        // Set cursor to start of new line
+        const range = document.createRange();
+        const selection = window.getSelection();
+        const lastNode = noteArea.lastChild;
+        
+        range.setStartAfter(lastNode);
+        range.collapse(true);
+        
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
         noteArea.focus();
     }
 
@@ -75,21 +90,23 @@ noteArea.addEventListener('keydown', (e) => {
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
         
-        // Check if current line starts with bullet
-        const isBullet = currentLine.textContent.trimStart().startsWith('- ');
-        const isEmptyBullet = currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ';
-        
-        if (isBullet) {
+        // Only check for bullets if line starts with '-'
+        if (currentLine.textContent.startsWith('- ')) {
             e.preventDefault();
-            if (isEmptyBullet) {
-                // Remove empty bullet
+            
+            // Check if bullet point is empty
+            if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
+                // Remove empty bullet and add line break
                 currentLine.textContent = '';
                 document.execCommand('insertLineBreak');
             } else {
-                // Add new bullet point
+                // Add new bullet point after non-empty bullet line
                 document.execCommand('insertLineBreak');
                 document.execCommand('insertText', false, '- ');
             }
+        } else {
+            // Normal line break for non-bullet lines
+            document.execCommand('insertLineBreak');
         }
     }
 });

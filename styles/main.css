@@ -137,7 +137,7 @@ body {
   width: 100%;
   height: 100%;
   border: var(--textarea-border);
-  border-radius: 4px;
+  border-radius: 5px;
   background: var(--textarea-bg);
   color: var(--text-color);
   font-size: max(16px, 3vmin);
@@ -220,7 +220,7 @@ button {
 .format-controls {
   display: flex;
   gap: 8px;
-  padding: 8px;
+  padding: 0px 8px 8px 8px;
   justify-content: center;
   background: var(--background-color);
 }
