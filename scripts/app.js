@@ -43,18 +43,7 @@ window.addEventListener('load', () => {
         
         // Add title with proper spacing
         noteArea.innerHTML = `${filename}<br><br>`;
-        
-        // Set cursor to start of new line
-        const range = document.createRange();
-        const selection = window.getSelection();
-        const lastNode = noteArea.lastChild;
-        
-        range.setStartAfter(lastNode);
-        range.collapse(true);
-        
-        selection.removeAllRanges();
-        selection.addRange(range);
-        
+
         noteArea.focus();
     }
 
