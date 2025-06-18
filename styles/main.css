@@ -226,7 +226,7 @@ button {
 }
 
 .format-controls button {
-  padding: 4px 12px;
+  padding: 0px 12px;
   background: var(--button-bg);
   border: 1px solid var(--button-border);
   color: var(--text-color);
