@@ -60,16 +60,19 @@ window.addEventListener('load', () => {
         filename = filenameInput.value.trim() || 'Untitled Document';
         modal.style.display = 'none';
         
-        // Add title with proper spacing and set cursor position
-        noteArea.innerHTML = `${filename}<br><br>`;
+        // Add title with three line breaks for better spacing
+        noteArea.innerHTML = `${filename}<br><br><br>`;
         
-        // Set cursor to start of second line
+        // Set cursor to start of third line
         const range = document.createRange();
         const selection = window.getSelection();
         
-        // Move cursor to end of content
-        range.selectNodeContents(noteArea);
-        range.collapse(false);
+        // Create a text node to ensure cursor placement
+        const textNode = document.createTextNode('');
+        noteArea.appendChild(textNode);
+        
+        range.setStart(textNode, 0);
+        range.collapse(true);
         
         selection.removeAllRanges();
         selection.addRange(range);
@@ -114,13 +117,28 @@ noteArea.addEventListener('keydown', (e) => {
         if (currentLine.textContent.startsWith('- ')) {
             // Check if bullet point is empty
             if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
-                // Remove empty bullet and keep cursor on same line
-                currentLine.textContent = currentLine.textContent.replace(/^- /, '');
-                selection.collapse(currentLine, currentLine.textContent.length);
-            } else {
-                // Add new bullet point
+                // Remove empty bullet and add new line
                 document.execCommand('insertLineBreak');
+                // Move cursor to start of new line
+                const newRange = document.createRange();
+                const newSelection = window.getSelection();
+                newRange.setStartAfter(currentLine);
+                newRange.collapse(true);
+                newSelection.removeAllRanges();
+                newSelection.addRange(newRange);
+            } else {
+                // Add new bullet point and preserve formatting
+                document.execCommand('insertLineBreak');
+                // Get current formatting state
+                const isBold = document.queryCommandState('bold');
+                const isItalic = document.queryCommandState('italic');
+                const isUnderline = document.queryCommandState('underline');
+                // Insert bullet
                 document.execCommand('insertText', false, '- ');
+                // Reapply formatting if needed
+                if (isBold) document.execCommand('bold', false, null);
+                if (isItalic) document.execCommand('italic', false, null);
+                if (isUnderline) document.execCommand('underline', false, null);
             }
         } else {
             // For non-bullet lines, just add a single line break
