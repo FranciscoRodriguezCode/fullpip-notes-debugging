@@ -14,18 +14,37 @@ function formatText(command) {
 
 boldBtn.addEventListener('click', () => {
     formatText('bold');
-    boldBtn.classList.toggle('active');
+    updateButtonStates();
 });
 
 italicBtn.addEventListener('click', () => {
     formatText('italic');
-    italicBtn.classList.toggle('active');
+    updateButtonStates();
 });
 
 underlineBtn.addEventListener('click', () => {
     formatText('underline');
-    underlineBtn.classList.toggle('active');
+    updateButtonStates();
 });
+
+// Add this function after your formatText function
+function updateButtonStates() {
+    if (document.queryCommandState) {
+        boldBtn.classList.toggle('active', document.queryCommandState('bold'));
+        italicBtn.classList.toggle('active', document.queryCommandState('italic'));
+        underlineBtn.classList.toggle('active', document.queryCommandState('underline'));
+    }
+}
+
+// Add selection change listener
+document.addEventListener('selectionchange', () => {
+    if (document.activeElement === noteArea) {
+        updateButtonStates();
+    }
+});
+
+// Also update on input to catch any changes
+noteArea.addEventListener('input', updateButtonStates);
 
 // Show filename modal on load
 window.addEventListener('load', () => {
