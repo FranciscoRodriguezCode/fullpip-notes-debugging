@@ -94,26 +94,25 @@ noteArea.addEventListener('input', () => {
 // Handle bullet points
 noteArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
+        e.preventDefault(); // Prevent default enter behavior
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
         
-        // Only check for bullets if line starts with '-'
+        // Check if current line starts with bullet
         if (currentLine.textContent.startsWith('- ')) {
-            e.preventDefault();
-            
             // Check if bullet point is empty
             if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
-                // Remove empty bullet and add line break
+                // Remove empty bullet
                 currentLine.textContent = '';
                 document.execCommand('insertLineBreak');
             } else {
-                // Add new bullet point after non-empty bullet line
+                // Add new bullet point
                 document.execCommand('insertLineBreak');
                 document.execCommand('insertText', false, '- ');
             }
         } else {
-            // Normal line break for non-bullet lines
+            // For non-bullet lines, just add a single line break
             document.execCommand('insertLineBreak');
         }
     }
