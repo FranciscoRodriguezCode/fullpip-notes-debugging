@@ -60,9 +60,20 @@ window.addEventListener('load', () => {
         filename = filenameInput.value.trim() || 'Untitled Document';
         modal.style.display = 'none';
         
-        // Add title with proper spacing
+        // Add title with proper spacing and set cursor position
         noteArea.innerHTML = `${filename}<br><br>`;
-
+        
+        // Set cursor to start of second line
+        const range = document.createRange();
+        const selection = window.getSelection();
+        
+        // Move cursor to end of content
+        range.selectNodeContents(noteArea);
+        range.collapse(false);
+        
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
         noteArea.focus();
     }
 
@@ -91,10 +102,10 @@ noteArea.addEventListener('input', () => {
   noteArea.scrollTop = noteArea.scrollHeight;
 });
 
-// Handle bullet points
+// Update bullet points handler
 noteArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-        e.preventDefault(); // Prevent default enter behavior
+        e.preventDefault();
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
@@ -103,9 +114,9 @@ noteArea.addEventListener('keydown', (e) => {
         if (currentLine.textContent.startsWith('- ')) {
             // Check if bullet point is empty
             if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
-                // Remove empty bullet
-                currentLine.textContent = '';
-                document.execCommand('insertLineBreak');
+                // Remove empty bullet and keep cursor on same line
+                currentLine.textContent = currentLine.textContent.replace(/^- /, '');
+                selection.collapse(currentLine, currentLine.textContent.length);
             } else {
                 // Add new bullet point
                 document.execCommand('insertLineBreak');
