@@ -8,35 +8,34 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
-    // Get current state before executing command
     const wasActive = document.queryCommandState(command);
-    
-    // Execute command and force focus
     document.execCommand(command, false, null);
-    noteArea.focus();
     
-    // Get button and update state
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
     
-    // Toggle button state opposite to what it was
-    button.classList.toggle('active', !wasActive);
+    // Special handling for underline in Safari
+    if (command === 'underline') {
+        button.classList.toggle('active');
+        // Force immediate state update
+        requestAnimationFrame(() => {
+            const currentState = document.queryCommandState(command);
+            button.classList.toggle('active', currentState);
+        });
+    } else {
+        button.classList.toggle('active', !wasActive);
+    }
+    
+    noteArea.focus();
 }
 
 // Event listeners - modified for Safari underline handling
 boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
-underlineBtn.addEventListener('click', () => {
-    underlineBtn.dataset.toggling = 'true';
-    formatText('underline');
-    // Clear toggling state after update
-    setTimeout(() => {
-        delete underlineBtn.dataset.toggling;
-    }, 100);
-});
+underlineBtn.addEventListener('click', () => formatText('underline'));
 
 // Update button states function
 function updateButtonStates() {
