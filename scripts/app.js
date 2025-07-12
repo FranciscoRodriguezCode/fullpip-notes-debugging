@@ -121,47 +121,27 @@ noteArea.addEventListener('input', () => {
   noteArea.scrollTop = noteArea.scrollHeight;
 });
 
-// Update the Enter key handler
+// Remove bullet point handling and simplify Enter key behavior
 noteArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
         
-        // Get current selection
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-        
-        // Store formatting state
+        // Store states before line break
         const formatState = {
             bold: document.queryCommandState('bold'),
             italic: document.queryCommandState('italic'),
             underline: document.queryCommandState('underline')
         };
         
-        // Create and insert a new div with preserved formatting
-        const formattedDiv = document.createElement('div');
-        if (formatState.bold) formattedDiv.style.fontWeight = 'bold';
-        if (formatState.italic) formattedDiv.style.fontStyle = 'italic';
-        if (formatState.underline) formattedDiv.style.textDecoration = 'underline';
-        
-        // Insert line break and formatted div
+        // Insert break and reapply formatting
         document.execCommand('insertLineBreak');
-        range.insertNode(formattedDiv);
         
-        // Move cursor into formatted div
-        const newRange = document.createRange();
-        newRange.setStart(formattedDiv, 0);
-        newRange.collapse(true);
-        
-        selection.removeAllRanges();
-        selection.addRange(newRange);
-        
-        // Force format reapplication
+        // Reapply active formatting
         Object.entries(formatState).forEach(([format, isActive]) => {
             if (isActive) document.execCommand(format, false, null);
         });
         
-        // Update button states
-        requestAnimationFrame(updateButtonStates);
+        updateButtonStates();
     }
 });
 
