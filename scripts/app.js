@@ -6,55 +6,39 @@ const italicBtn = document.getElementById('italic-btn');
 const underlineBtn = document.getElementById('underline-btn');
 let filename = '';
 
-// Format buttons functionality
+// Format buttons functionality - simplified
 function formatText(command) {
-    // Execute command first
     document.execCommand(command, false, null);
     noteArea.focus();
-    
-    // Update button states after command execution
-    requestAnimationFrame(() => {
-        const isActive = document.queryCommandState(command);
-        const button = {
-            'bold': boldBtn,
-            'italic': italicBtn,
-            'underline': underlineBtn
-        }[command];
-        button.classList.toggle('active', isActive);
-    });
+    updateButtonStates();
 }
 
-// Event listeners with consistent handling
+// Event listeners - simplified
 boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => formatText('underline'));
 
-// Update button states function with debounce
-let updateTimeout;
+// Update button states - simplified without debounce
 function updateButtonStates() {
-    if (updateTimeout) clearTimeout(updateTimeout);
-    
-    updateTimeout = setTimeout(() => {
-        if (document.queryCommandState) {
-            // Update states based on current selection
-            const states = {
-                bold: document.queryCommandState('bold'),
-                italic: document.queryCommandState('italic'),
-                underline: document.queryCommandState('underline')
-            };
-            
-            // Apply states to buttons
-            boldBtn.classList.toggle('active', states.bold);
-            italicBtn.classList.toggle('active', states.italic);
-            underlineBtn.classList.toggle('active', states.underline);
-        }
-    }, 0);
+    if (document.queryCommandState) {
+        // Get current states
+        const states = {
+            bold: document.queryCommandState('bold'),
+            italic: document.queryCommandState('italic'),
+            underline: document.queryCommandState('underline')
+        };
+        
+        // Update button states directly
+        boldBtn.classList.toggle('active', states.bold);
+        italicBtn.classList.toggle('active', states.italic);
+        underlineBtn.classList.toggle('active', states.underline);
+    }
 }
 
-// Simplified event listeners
+// Keep only necessary event listeners
 document.addEventListener('selectionchange', () => {
     if (document.activeElement === noteArea) {
-        requestAnimationFrame(updateButtonStates);
+        updateButtonStates();
     }
 });
 
