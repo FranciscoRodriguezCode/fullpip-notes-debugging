@@ -8,22 +8,20 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
-    // Get current state before executing command
-    const wasActive = document.queryCommandState(command);
-    
-    // Execute command and force focus
+    // Execute command first
     document.execCommand(command, false, null);
     noteArea.focus();
     
-    // Get button and update state
-    const button = {
-        'bold': boldBtn,
-        'italic': italicBtn,
-        'underline': underlineBtn
-    }[command];
-    
-    // Toggle button state opposite to what it was
-    button.classList.toggle('active', !wasActive);
+    // Update button states after command execution
+    requestAnimationFrame(() => {
+        const isActive = document.queryCommandState(command);
+        const button = {
+            'bold': boldBtn,
+            'italic': italicBtn,
+            'underline': underlineBtn
+        }[command];
+        button.classList.toggle('active', isActive);
+    });
 }
 
 // Event listeners with consistent handling
@@ -31,32 +29,38 @@ boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => formatText('underline'));
 
-// Update button states function
+// Update button states function with debounce
+let updateTimeout;
 function updateButtonStates() {
-    if (document.queryCommandState) {
-        // Update states based on current selection
-        const states = {
-            bold: document.queryCommandState('bold'),
-            italic: document.queryCommandState('italic'),
-            underline: document.queryCommandState('underline')
-        };
-        
-        // Apply states to buttons
-        boldBtn.classList.toggle('active', states.bold);
-        italicBtn.classList.toggle('active', states.italic);
-        underlineBtn.classList.toggle('active', states.underline);
-    }
+    if (updateTimeout) clearTimeout(updateTimeout);
+    
+    updateTimeout = setTimeout(() => {
+        if (document.queryCommandState) {
+            // Update states based on current selection
+            const states = {
+                bold: document.queryCommandState('bold'),
+                italic: document.queryCommandState('italic'),
+                underline: document.queryCommandState('underline')
+            };
+            
+            // Apply states to buttons
+            boldBtn.classList.toggle('active', states.bold);
+            italicBtn.classList.toggle('active', states.italic);
+            underlineBtn.classList.toggle('active', states.underline);
+        }
+    }, 0);
 }
 
-// Add selection change listener
+// Simplified event listeners
 document.addEventListener('selectionchange', () => {
     if (document.activeElement === noteArea) {
-        updateButtonStates();
+        requestAnimationFrame(updateButtonStates);
     }
 });
 
-// Also update on input to catch any changes
-noteArea.addEventListener('input', updateButtonStates);
+noteArea.addEventListener('input', () => {
+    requestAnimationFrame(updateButtonStates);
+});
 
 // Show filename modal on load
 window.addEventListener('load', () => {
@@ -129,15 +133,27 @@ noteArea.addEventListener('keydown', (e) => {
             underline: document.queryCommandState('underline')
         };
         
-        // Insert break and reapply formatting
+        // Insert break
         document.execCommand('insertLineBreak');
         
-        // Reapply active formatting
-        Object.entries(formatState).forEach(([format, isActive]) => {
-            if (isActive) document.execCommand(format, false, null);
-        });
+        // Create a temporary node to ensure formatting continues
+        const temp = document.createTextNode('\u200B'); // Zero-width space
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        range.insertNode(temp);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
         
-        updateButtonStates();
+        // Reapply active formatting
+        if (formatState.bold) document.execCommand('bold', false, null);
+        if (formatState.italic) document.execCommand('italic', false, null);
+        if (formatState.underline) document.execCommand('underline', false, null);
+        
+        // Update button states immediately
+        requestAnimationFrame(() => {
+            updateButtonStates();
+        });
     }
 });
 
