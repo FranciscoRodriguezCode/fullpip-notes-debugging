@@ -8,27 +8,17 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
-    // Get current state before executing command
-    const isActive = document.queryCommandState(command);
-    
-    // Execute formatting command
     document.execCommand(command, false, null);
+    noteArea.focus();
     
-    // Get button reference
+    // Single state update
+    const isActive = document.queryCommandState(command);
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
-    
-    // Immediate state update
-    button.classList.toggle('active', !isActive);
-    
-    // Ensure focus remains on note area
-    noteArea.focus();
-    
-    // Force immediate state check and update
-    updateButtonStates();
+    button.classList.toggle('active', isActive);
 }
 
 // Event listeners with consistent handling
