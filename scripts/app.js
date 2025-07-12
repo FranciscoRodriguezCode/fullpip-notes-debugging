@@ -8,25 +8,30 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
+    // Get state before executing command
     const wasActive = document.queryCommandState(command);
+    
+    // Execute format command
     document.execCommand(command, false, null);
     
+    // Handle button state update
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
     
-    // Special handling for underline in Safari
+    // Force immediate state toggle for all formats
+    button.classList.toggle('active', !wasActive);
+    
+    // For underline, add a data attribute to track state
     if (command === 'underline') {
-        button.classList.toggle('active');
-        // Force immediate state update
-        requestAnimationFrame(() => {
-            const currentState = document.queryCommandState(command);
-            button.classList.toggle('active', currentState);
-        });
-    } else {
-        button.classList.toggle('active', !wasActive);
+        button.dataset.underlineState = (!wasActive).toString();
+        // Force selection refresh for Safari
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        selection.removeAllRanges();
+        selection.addRange(range);
     }
     
     noteArea.focus();
@@ -37,20 +42,25 @@ boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => formatText('underline'));
 
-// Update button states function
+// Update button states function - modified for better offline handling
 function updateButtonStates() {
     if (document.queryCommandState) {
-        // Update states based on current selection
-        const states = {
-            bold: document.queryCommandState('bold'),
-            italic: document.queryCommandState('italic'),
-            underline: document.queryCommandState('underline')
-        };
-        
-        // Apply states to buttons
-        boldBtn.classList.toggle('active', states.bold);
-        italicBtn.classList.toggle('active', states.italic);
-        underlineBtn.classList.toggle('active', states.underline);
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            // Update bold and italic normally
+            boldBtn.classList.toggle('active', document.queryCommandState('bold'));
+            italicBtn.classList.toggle('active', document.queryCommandState('italic'));
+            
+            // Special handling for underline state
+            const isUnderlined = document.queryCommandState('underline');
+            const storedState = underlineBtn.dataset.underlineState === 'true';
+            
+            // Only update if there's a mismatch
+            if (storedState !== isUnderlined) {
+                underlineBtn.classList.toggle('active', isUnderlined);
+                underlineBtn.dataset.underlineState = isUnderlined.toString();
+            }
+        }
     }
 }
 
