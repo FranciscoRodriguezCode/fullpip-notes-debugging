@@ -8,17 +8,22 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
+    // Get current state before executing command
+    const wasActive = document.queryCommandState(command);
+    
+    // Execute command and force focus
     document.execCommand(command, false, null);
     noteArea.focus();
     
-    // Single state update
-    const isActive = document.queryCommandState(command);
+    // Get button and update state
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
-    button.classList.toggle('active', isActive);
+    
+    // Toggle button state opposite to what it was
+    button.classList.toggle('active', !wasActive);
 }
 
 // Event listeners with consistent handling
@@ -29,15 +34,17 @@ underlineBtn.addEventListener('click', () => formatText('underline'));
 // Update button states function
 function updateButtonStates() {
     if (document.queryCommandState) {
-        // Get current states directly
-        const boldState = document.queryCommandState('bold');
-        const italicState = document.queryCommandState('italic');
-        const underlineState = document.queryCommandState('underline');
+        // Update states based on current selection
+        const states = {
+            bold: document.queryCommandState('bold'),
+            italic: document.queryCommandState('italic'),
+            underline: document.queryCommandState('underline')
+        };
         
-        // Update button states immediately
-        boldBtn.classList.toggle('active', boldState);
-        italicBtn.classList.toggle('active', italicState);
-        underlineBtn.classList.toggle('active', underlineState);
+        // Apply states to buttons
+        boldBtn.classList.toggle('active', states.bold);
+        italicBtn.classList.toggle('active', states.italic);
+        underlineBtn.classList.toggle('active', states.underline);
     }
 }
 
@@ -114,28 +121,23 @@ noteArea.addEventListener('input', () => {
 noteArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
         
-        // Store current formatting states
+        // Store states before line break
         const formatState = {
             bold: document.queryCommandState('bold'),
             italic: document.queryCommandState('italic'),
             underline: document.queryCommandState('underline')
         };
         
-        // Insert line break first
+        // Insert break and reapply formatting
         document.execCommand('insertLineBreak');
         
-        // Reapply formatting commands instead of using span
-        if (formatState.bold) document.execCommand('bold', false, null);
-        if (formatState.italic) document.execCommand('italic', false, null);
-        if (formatState.underline) document.execCommand('underline', false, null);
-        
-        // Force button state update
-        requestAnimationFrame(() => {
-            updateButtonStates();
+        // Reapply active formatting
+        Object.entries(formatState).forEach(([format, isActive]) => {
+            if (isActive) document.execCommand(format, false, null);
         });
+        
+        updateButtonStates();
     }
 });
 
