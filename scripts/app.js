@@ -6,61 +6,44 @@ const italicBtn = document.getElementById('italic-btn');
 const underlineBtn = document.getElementById('underline-btn');
 let filename = '';
 
-// Format buttons functionality
+// Format buttons functionality - simplified for typing mode
 function formatText(command) {
-    // Get state before executing command
-    const wasActive = document.queryCommandState(command);
-    
-    // Execute format command
+    // Execute format command directly
     document.execCommand(command, false, null);
     
-    // Handle button state update
+    // Update button state based on current command state
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
     
-    // Force immediate state toggle for all formats
-    button.classList.toggle('active', !wasActive);
-    
-    // For underline, add a data attribute to track state
-    if (command === 'underline') {
-        button.dataset.underlineState = (!wasActive).toString();
-        // Force selection refresh for Safari
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }
+    // Toggle button active state
+    const isActive = document.queryCommandState(command);
+    button.classList.toggle('active', isActive);
     
     noteArea.focus();
 }
 
-// Event listeners - modified for Safari underline handling
+// Event listeners for format buttons
 boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => formatText('underline'));
 
-// Update button states function - modified for better offline handling
+// Simplified state update
 function updateButtonStates() {
     if (document.queryCommandState) {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            // Update bold and italic normally
-            boldBtn.classList.toggle('active', document.queryCommandState('bold'));
-            italicBtn.classList.toggle('active', document.queryCommandState('italic'));
-            
-            // Special handling for underline state
-            const isUnderlined = document.queryCommandState('underline');
-            const storedState = underlineBtn.dataset.underlineState === 'true';
-            
-            // Only update if there's a mismatch
-            if (storedState !== isUnderlined) {
-                underlineBtn.classList.toggle('active', isUnderlined);
-                underlineBtn.dataset.underlineState = isUnderlined.toString();
-            }
-        }
+        // Get current format states
+        const states = {
+            bold: document.queryCommandState('bold'),
+            italic: document.queryCommandState('italic'),
+            underline: document.queryCommandState('underline')
+        };
+        
+        // Update button states directly
+        boldBtn.classList.toggle('active', states.bold);
+        italicBtn.classList.toggle('active', states.italic);
+        underlineBtn.classList.toggle('active', states.underline);
     }
 }
 
