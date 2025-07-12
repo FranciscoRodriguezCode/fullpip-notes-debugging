@@ -30,33 +30,36 @@ italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => formatText('underline'));
 
 // Update button states function with debounce
+let updateTimeout;
 function updateButtonStates() {
-    if (document.queryCommandState) {
-        // Update states based on current selection
-        const states = {
-            bold: document.queryCommandState('bold'),
-            italic: document.queryCommandState('italic'),
-            underline: document.queryCommandState('underline')
-        };
-        
-        // Apply states to buttons
-        boldBtn.classList.toggle('active', states.bold);
-        italicBtn.classList.toggle('active', states.italic);
-        underlineBtn.classList.toggle('active', states.underline);
-    }
+    if (updateTimeout) clearTimeout(updateTimeout);
+    
+    updateTimeout = setTimeout(() => {
+        if (document.queryCommandState) {
+            // Update states based on current selection
+            const states = {
+                bold: document.queryCommandState('bold'),
+                italic: document.queryCommandState('italic'),
+                underline: document.queryCommandState('underline')
+            };
+            
+            // Apply states to buttons
+            boldBtn.classList.toggle('active', states.bold);
+            italicBtn.classList.toggle('active', states.italic);
+            underlineBtn.classList.toggle('active', states.underline);
+        }
+    }, 0);
 }
 
 // Simplified event listeners
 document.addEventListener('selectionchange', () => {
     if (document.activeElement === noteArea) {
-        // Remove requestAnimationFrame
-        updateButtonStates();
+        requestAnimationFrame(updateButtonStates);
     }
 });
 
 noteArea.addEventListener('input', () => {
-    // Remove requestAnimationFrame
-    updateButtonStates();
+    requestAnimationFrame(updateButtonStates);
 });
 
 // Show filename modal on load
@@ -103,8 +106,14 @@ window.addEventListener('load', () => {
 
 // Prevent scroll on focus
 noteArea.addEventListener('focus', (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  const preventScroll = () => {
     window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  };
+  preventScroll();
+  setTimeout(preventScroll, 50);
 });
 
 // Auto-scroll textarea
@@ -156,29 +165,30 @@ copyBtn.addEventListener('click', async () => {
     
     try {
         await navigator.clipboard.writeText(formattedContent);
-        updateCopyButton(); // Extract to function
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+        }, 2000);
     } catch (err) {
+        // Fallback for formatting support
+        const clipboardItem = new ClipboardItem({
+            'text/html': new Blob([formattedContent], { type: 'text/html' }),
+            'text/plain': new Blob([noteArea.innerText], { type: 'text/plain' })
+        });
+        
         try {
-            const clipboardItem = new ClipboardItem({
-                'text/html': new Blob([formattedContent], { type: 'text/html' }),
-                'text/plain': new Blob([noteArea.innerText], { type: 'text/plain' })
-            });
             await navigator.clipboard.write([clipboardItem]);
-            updateCopyButton(); // Extract to function
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
         } catch (err) {
             fallbackCopyToClipboard(noteArea.innerText);
         }
     }
 });
-
-// Add this helper function:
-function updateCopyButton() {
-    const originalText = copyBtn.textContent;
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => {
-        copyBtn.textContent = originalText;
-    }, 2000);
-}
 
 // Update fallback function
 function fallbackCopyToClipboard(text) {
@@ -317,7 +327,8 @@ if (window.visualViewport) {
         }
     }
 
-    window.visualViewport.addEventListener('resize scroll', handleViewportChange);
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    window.visualViewport.addEventListener('scroll', handleViewportChange);
     
     window.addEventListener('load', () => {
         maxVisualHeight = window.innerHeight;
