@@ -113,22 +113,19 @@ noteArea.addEventListener('keydown', (e) => {
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
         
-        // Get formatting state before any changes
+        // Get parent element to check actual formatting
+        const parentElement = currentLine.nodeType === 3 ? currentLine.parentNode : currentLine;
+        
+        // Improved format state detection
         const formatState = {
-            bold: document.queryCommandState('bold'),
-            italic: document.queryCommandState('italic'),
-            underline: document.queryCommandState('underline')
+            bold: parentElement.style.fontWeight === 'bold' || document.queryCommandState('bold'),
+            italic: parentElement.style.fontStyle === 'italic' || document.queryCommandState('italic'),
+            underline: parentElement.style.textDecoration === 'underline' || document.queryCommandState('underline')
         };
         
-        // Create formatted span for new content
-        const span = document.createElement('span');
-        if (formatState.bold) span.style.fontWeight = 'bold';
-        if (formatState.italic) span.style.fontStyle = 'italic';
-        if (formatState.underline) span.style.textDecoration = 'underline';
-        
-        // Check for bullet point
+        // Check for bullet point with better format detection
         const currentText = currentLine.textContent || currentLine.innerText;
-        const isBullet = currentText.startsWith('- ');
+        const isBullet = currentText.trim().startsWith('- ');
         
         if (isBullet) {
             if (currentText.trim() === '-' || currentText.trim() === '- ') {
@@ -136,23 +133,34 @@ noteArea.addEventListener('keydown', (e) => {
                 currentLine.textContent = '';
                 document.execCommand('insertParagraph');
             } else {
-                // Insert new line with preserved formatting
+                // Create unformatted bullet with formatted content span
                 document.execCommand('insertParagraph');
-                const bullet = document.createTextNode('- ');
-                span.appendChild(bullet);
-                selection.getRangeAt(0).insertNode(span);
                 
-                // Position cursor after bullet
+                // Add unformatted bullet
+                const bulletText = document.createTextNode('- ');
+                selection.getRangeAt(0).insertNode(bulletText);
+                
+                // Create span for formatted content
+                const formattedSpan = document.createElement('span');
+                if (formatState.bold) formattedSpan.style.fontWeight = 'bold';
+                if (formatState.italic) formattedSpan.style.fontStyle = 'italic';
+                if (formatState.underline) formattedSpan.style.textDecoration = 'underline';
+                
+                // Position cursor in formatted span
                 const newRange = document.createRange();
-                newRange.setStartAfter(span);
+                newRange.setStartAfter(bulletText);
                 newRange.collapse(true);
                 selection.removeAllRanges();
                 selection.addRange(newRange);
             }
         } else {
-            // Insert new line with preserved formatting
+            // Regular line with formatting
             document.execCommand('insertParagraph');
-            selection.getRangeAt(0).insertNode(span);
+            
+            // Reapply formatting
+            if (formatState.bold) document.execCommand('bold', false, null);
+            if (formatState.italic) document.execCommand('italic', false, null);
+            if (formatState.underline) document.execCommand('underline', false, null);
         }
         
         updateButtonStates();
