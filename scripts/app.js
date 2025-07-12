@@ -126,8 +126,14 @@ noteArea.addEventListener('keydown', (e) => {
             currentLine.innerText || currentLine.textContent;
         const isBullet = lineText.trim().match(/^-\s/);
 
-        // Insert line break instead of paragraph
-        document.execCommand('insertLineBreak');
+        // Create a new span to maintain formatting
+        const newSpan = document.createElement('span');
+        if (formatState.bold) newSpan.style.fontWeight = 'bold';
+        if (formatState.italic) newSpan.style.fontStyle = 'italic';
+        if (formatState.underline) newSpan.style.textDecoration = 'underline';
+        
+        // Insert line break with formatting
+        document.execCommand('insertHTML', false, '<br>');
         
         // Check if current line is a bullet point
         if (isBullet) {
@@ -140,14 +146,18 @@ noteArea.addEventListener('keydown', (e) => {
                 }
             } else {
                 // Add new bullet with formatting preserved
-                document.execCommand('insertText', false, '- ');
+                const bulletText = document.createTextNode('- ');
+                newSpan.appendChild(bulletText);
+                selection.getRangeAt(0).insertNode(newSpan);
+                
+                // Move cursor after bullet
+                const newRange = document.createRange();
+                newRange.setStartAfter(newSpan);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
             }
         }
-        
-        // Reapply formatting
-        if (formatState.bold) document.execCommand('bold', false, null);
-        if (formatState.italic) document.execCommand('italic', false, null);
-        if (formatState.underline) document.execCommand('underline', false, null);
         
         // Update button states
         updateButtonStates();
