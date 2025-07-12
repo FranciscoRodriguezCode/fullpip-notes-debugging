@@ -121,39 +121,47 @@ noteArea.addEventListener('input', () => {
   noteArea.scrollTop = noteArea.scrollHeight;
 });
 
-// Remove bullet point handling and simplify Enter key behavior
+// Update the Enter key handler
 noteArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
         
-        // Store states before line break
+        // Get current selection
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        
+        // Store formatting state
         const formatState = {
             bold: document.queryCommandState('bold'),
             italic: document.queryCommandState('italic'),
             underline: document.queryCommandState('underline')
         };
         
-        // Insert break
+        // Create and insert a new div with preserved formatting
+        const formattedDiv = document.createElement('div');
+        if (formatState.bold) formattedDiv.style.fontWeight = 'bold';
+        if (formatState.italic) formattedDiv.style.fontStyle = 'italic';
+        if (formatState.underline) formattedDiv.style.textDecoration = 'underline';
+        
+        // Insert line break and formatted div
         document.execCommand('insertLineBreak');
+        range.insertNode(formattedDiv);
         
-        // Create a temporary node to ensure formatting continues
-        const temp = document.createTextNode('\u200B'); // Zero-width space
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-        range.insertNode(temp);
-        range.collapse(false);
+        // Move cursor into formatted div
+        const newRange = document.createRange();
+        newRange.setStart(formattedDiv, 0);
+        newRange.collapse(true);
+        
         selection.removeAllRanges();
-        selection.addRange(range);
+        selection.addRange(newRange);
         
-        // Reapply active formatting
-        if (formatState.bold) document.execCommand('bold', false, null);
-        if (formatState.italic) document.execCommand('italic', false, null);
-        if (formatState.underline) document.execCommand('underline', false, null);
-        
-        // Update button states immediately
-        requestAnimationFrame(() => {
-            updateButtonStates();
+        // Force format reapplication
+        Object.entries(formatState).forEach(([format, isActive]) => {
+            if (isActive) document.execCommand(format, false, null);
         });
+        
+        // Update button states
+        requestAnimationFrame(updateButtonStates);
     }
 });
 
