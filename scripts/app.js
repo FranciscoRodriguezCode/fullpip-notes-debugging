@@ -8,7 +8,14 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
-    document.execCommand(command, false, null);
+    // Special handling for underline to ensure proper toggling
+    if (command === 'underline') {
+        const isUnderlined = document.queryCommandState('underline');
+        document.execCommand('underline', false, null);
+        underlineBtn.classList.toggle('active', !isUnderlined);
+    } else {
+        document.execCommand(command, false, null);
+    }
     noteArea.focus();
 }
 
@@ -32,7 +39,9 @@ function updateButtonStates() {
     if (document.queryCommandState) {
         boldBtn.classList.toggle('active', document.queryCommandState('bold'));
         italicBtn.classList.toggle('active', document.queryCommandState('italic'));
-        underlineBtn.classList.toggle('active', document.queryCommandState('underline'));
+        // Force check current underline state
+        const isUnderlined = document.queryCommandState('underline');
+        underlineBtn.classList.toggle('active', isUnderlined);
     }
 }
 
