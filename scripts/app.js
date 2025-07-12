@@ -6,9 +6,24 @@ const italicBtn = document.getElementById('italic-btn');
 const underlineBtn = document.getElementById('underline-btn');
 let filename = '';
 
-// Format buttons functionality - simplified
+// Format buttons functionality - modified for better underline handling
 function formatText(command) {
+    // Get state before executing command
+    const wasActive = document.queryCommandState(command);
+    
+    // Execute format command
     document.execCommand(command, false, null);
+    
+    // Force immediate state update for underline
+    if (command === 'underline') {
+        underlineBtn.classList.toggle('active', !wasActive);
+        // Force selection refresh to ensure proper state
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+    
     noteArea.focus();
     updateButtonStates();
 }
@@ -18,20 +33,17 @@ boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => formatText('underline'));
 
-// Update button states - simplified without debounce
+// Update button states - modified for more reliable state checking
 function updateButtonStates() {
     if (document.queryCommandState) {
-        // Get current states
-        const states = {
-            bold: document.queryCommandState('bold'),
-            italic: document.queryCommandState('italic'),
-            underline: document.queryCommandState('underline')
-        };
-        
-        // Update button states directly
-        boldBtn.classList.toggle('active', states.bold);
-        italicBtn.classList.toggle('active', states.italic);
-        underlineBtn.classList.toggle('active', states.underline);
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            boldBtn.classList.toggle('active', document.queryCommandState('bold'));
+            italicBtn.classList.toggle('active', document.queryCommandState('italic'));
+            // Force immediate state check for underline
+            const isUnderlined = document.queryCommandState('underline');
+            underlineBtn.classList.toggle('active', isUnderlined);
+        }
     }
 }
 
