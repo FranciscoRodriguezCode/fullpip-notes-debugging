@@ -122,16 +122,17 @@ noteArea.addEventListener('keydown', (e) => {
         if (currentLine.textContent.startsWith('- ')) {
             // Check if bullet point is empty
             if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
-                // Remove bullet and keep cursor at start of line
+                // Remove bullet and insert break
                 currentLine.textContent = '';
-                const newRange = document.createRange();
-                newRange.setStart(currentLine, 0);
-                newRange.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
+                document.execCommand('insertParagraph');
+                
+                // Reapply formatting if active
+                if (isBold) document.execCommand('bold', false, null);
+                if (isItalic) document.execCommand('italic', false, null);
+                if (isUnderline) document.execCommand('underline', false, null);
             } else {
                 // Add new bullet point and preserve formatting
-                document.execCommand('insertLineBreak');
+                document.execCommand('insertParagraph');
                 document.execCommand('insertText', false, '- ');
                 
                 // Reapply formatting if active
@@ -140,8 +141,8 @@ noteArea.addEventListener('keydown', (e) => {
                 if (isUnderline) document.execCommand('underline', false, null);
             }
         } else {
-            // For non-bullet lines, add line break and preserve formatting
-            document.execCommand('insertLineBreak');
+            // For non-bullet lines, add paragraph break and preserve formatting
+            document.execCommand('insertParagraph');
             
             // Reapply formatting if active
             if (isBold) document.execCommand('bold', false, null);
