@@ -115,7 +115,7 @@ body {
 
 .full-pip {
   width: 90%;
-  height: 80%;
+  height: 50%;
   border: 2px solid var(--border-color); /* Change from #000 to variable */
   border-radius: 10px;
   background: transparent;
