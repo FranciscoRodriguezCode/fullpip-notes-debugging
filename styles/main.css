@@ -241,5 +241,6 @@ button {
 
 /* Add this to your CSS */
 .underline-pending {
-    background-color: var(--background-color) !important; /* light red */
+    background-color: var(--button-bg) !important; /* light red */
+    color: var(--text-color) !important; /* Ensure text is readable */
 }
