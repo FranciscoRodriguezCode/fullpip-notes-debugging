@@ -8,40 +8,14 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
-    // Special handling for underline to ensure proper toggling
-    if (command === 'underline') {
-        // Get current underline state before executing command
-        const isUnderlined = document.queryCommandState('underline');
-        document.execCommand('underline', false, null);
-        // Update button state opposite to previous state
-        underlineBtn.classList.toggle('active');
-        // Force immediate state update
-        requestAnimationFrame(() => {
-            updateButtonStates();
-        });
-    } else {
-        document.execCommand(command, false, null);
-    }
+    document.execCommand(command, false, null);
     noteArea.focus();
+    updateButtonStates();
 }
 
-boldBtn.addEventListener('click', () => {
-    formatText('bold');
-    updateButtonStates();
-});
-
-italicBtn.addEventListener('click', () => {
-    formatText('italic');
-    updateButtonStates();
-});
-
-underlineBtn.addEventListener('click', () => {
-    formatText('underline');
-    // Force immediate state check after click
-    requestAnimationFrame(() => {
-        updateButtonStates();
-    });
-});
+boldBtn.addEventListener('click', () => formatText('bold'));
+italicBtn.addEventListener('click', () => formatText('italic'));
+underlineBtn.addEventListener('click', () => formatText('underline'));
 
 // Add this function after your formatText function
 function updateButtonStates() {
@@ -121,7 +95,7 @@ noteArea.addEventListener('input', () => {
   noteArea.scrollTop = noteArea.scrollHeight;
 });
 
-// Update bullet points handler
+// Remove bullet point handling and simplify Enter key behavior
 noteArea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
