@@ -112,50 +112,38 @@ noteArea.addEventListener('keydown', (e) => {
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
-        
-        // Get parent element to check actual formatting
-        const parentElement = currentLine.nodeType === 3 ? currentLine.parentNode : currentLine;
-        
-        // Improved format state detection
+
+        // Get current formatting states
         const formatState = {
-            bold: parentElement.style.fontWeight === 'bold' || document.queryCommandState('bold'),
-            italic: parentElement.style.fontStyle === 'italic' || document.queryCommandState('italic'),
-            underline: parentElement.style.textDecoration === 'underline' || document.queryCommandState('underline')
+            bold: document.queryCommandState('bold'),
+            italic: document.queryCommandState('italic'),
+            underline: document.queryCommandState('underline')
         };
-        
-        // Check for bullet point with better format detection
+
+        // Check for bullet point
         const currentText = currentLine.textContent || currentLine.innerText;
         const isBullet = currentText.trim().startsWith('- ');
-        
+
         if (isBullet) {
             if (currentText.trim() === '-' || currentText.trim() === '- ') {
                 // Remove empty bullet
                 currentLine.textContent = '';
-                document.execCommand('insertParagraph');
+                document.execCommand('insertLineBreak');
             } else {
-                // Create unformatted bullet with formatted content span
-                document.execCommand('insertParagraph');
+                // Insert line break first
+                document.execCommand('insertLineBreak');
                 
-                // Add unformatted bullet
-                const bulletText = document.createTextNode('- ');
-                selection.getRangeAt(0).insertNode(bulletText);
+                // Add bullet
+                document.execCommand('insertText', false, '- ');
                 
-                // Create span for formatted content
-                const formattedSpan = document.createElement('span');
-                if (formatState.bold) formattedSpan.style.fontWeight = 'bold';
-                if (formatState.italic) formattedSpan.style.fontStyle = 'italic';
-                if (formatState.underline) formattedSpan.style.textDecoration = 'underline';
-                
-                // Position cursor in formatted span
-                const newRange = document.createRange();
-                newRange.setStartAfter(bulletText);
-                newRange.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
+                // Reapply formatting immediately after bullet
+                if (formatState.bold) document.execCommand('bold', false, null);
+                if (formatState.italic) document.execCommand('italic', false, null);
+                if (formatState.underline) document.execCommand('underline', false, null);
             }
         } else {
-            // Regular line with formatting
-            document.execCommand('insertParagraph');
+            // Regular line break
+            document.execCommand('insertLineBreak');
             
             // Reapply formatting
             if (formatState.bold) document.execCommand('bold', false, null);
