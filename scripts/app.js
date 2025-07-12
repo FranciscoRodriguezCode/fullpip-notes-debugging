@@ -112,43 +112,47 @@ noteArea.addEventListener('keydown', (e) => {
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
-
-        // Get current formatting states
+        
+        // Get formatting state before any changes
         const formatState = {
             bold: document.queryCommandState('bold'),
             italic: document.queryCommandState('italic'),
             underline: document.queryCommandState('underline')
         };
-
+        
+        // Create formatted span for new content
+        const span = document.createElement('span');
+        if (formatState.bold) span.style.fontWeight = 'bold';
+        if (formatState.italic) span.style.fontStyle = 'italic';
+        if (formatState.underline) span.style.textDecoration = 'underline';
+        
         // Check for bullet point
         const currentText = currentLine.textContent || currentLine.innerText;
-        const isBullet = currentText.trim().startsWith('- ');
-
+        const isBullet = currentText.startsWith('- ');
+        
         if (isBullet) {
             if (currentText.trim() === '-' || currentText.trim() === '- ') {
                 // Remove empty bullet
                 currentLine.textContent = '';
-                document.execCommand('insertLineBreak');
+                document.execCommand('insertParagraph');
             } else {
-                // Insert line break first
-                document.execCommand('insertLineBreak');
+                // Insert new line with preserved formatting
+                document.execCommand('insertParagraph');
+                const bullet = document.createTextNode('- ');
+                span.appendChild(bullet);
+                selection.getRangeAt(0).insertNode(span);
                 
-                // Add bullet
-                document.execCommand('insertText', false, '- ');
-                
-                // Reapply formatting immediately after bullet
-                if (formatState.bold) document.execCommand('bold', false, null);
-                if (formatState.italic) document.execCommand('italic', false, null);
-                if (formatState.underline) document.execCommand('underline', false, null);
+                // Position cursor after bullet
+                const newRange = document.createRange();
+                newRange.setStartAfter(span);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
             }
         } else {
-            // Regular line break
-            document.execCommand('insertLineBreak');
-            
-            // Reapply formatting
-            if (formatState.bold) document.execCommand('bold', false, null);
-            if (formatState.italic) document.execCommand('italic', false, null);
-            if (formatState.underline) document.execCommand('underline', false, null);
+            // Insert new line with preserved formatting
+            document.execCommand('insertParagraph');
+            selection.getRangeAt(0).insertNode(span);
         }
         
         updateButtonStates();
