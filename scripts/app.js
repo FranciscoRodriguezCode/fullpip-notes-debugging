@@ -118,27 +118,30 @@ noteArea.addEventListener('keydown', (e) => {
         const isItalic = document.queryCommandState('italic');
         const isUnderline = document.queryCommandState('underline');
         
-        // Check if current line starts with bullet
-        if (currentLine.textContent.startsWith('- ')) {
+        // Improved bullet point detection
+        const lineText = currentLine.nodeType === 3 ? 
+            currentLine.textContent : 
+            currentLine.innerText || currentLine.textContent;
+        const isBullet = lineText.trim().match(/^-\s/);
+        
+        // Check if current line is a bullet point
+        if (isBullet) {
             // Check if bullet point is empty
-            if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
+            if (lineText.trim() === '-' || lineText.trim() === '- ') {
                 // Remove bullet point completely
-                currentLine.textContent = '';
+                if (currentLine.nodeType === 3) {
+                    currentLine.textContent = '';
+                } else {
+                    currentLine.innerHTML = '';
+                }
                 document.execCommand('insertParagraph');
-                
-                // Move cursor to start of new line
-                const newRange = document.createRange();
-                newRange.setStart(selection.focusNode, 0);
-                newRange.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
                 
                 // Reapply formatting if active
                 if (isBold) document.execCommand('bold', false, null);
                 if (isItalic) document.execCommand('italic', false, null);
                 if (isUnderline) document.execCommand('underline', false, null);
             } else {
-                // Add new bullet point
+                // Add new bullet point with formatting
                 document.execCommand('insertParagraph');
                 
                 // Apply formatting before inserting bullet
