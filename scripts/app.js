@@ -125,8 +125,13 @@ noteArea.addEventListener('keydown', (e) => {
             currentLine.textContent : 
             currentLine.innerText || currentLine.textContent;
         const isBullet = lineText.trim().match(/^-\s/);
+
+        // Apply formatting before new line
+        if (formatState.bold) document.execCommand('bold', false, null);
+        if (formatState.italic) document.execCommand('italic', false, null);
+        if (formatState.underline) document.execCommand('underline', false, null);
         
-        // Apply line break first
+        // Insert new line with formatting
         document.execCommand('insertParagraph');
         
         // Check if current line is a bullet point
@@ -139,18 +144,13 @@ noteArea.addEventListener('keydown', (e) => {
                     currentLine.innerHTML = '';
                 }
             } else {
-                // Add new bullet with current formatting
+                // Add new bullet with formatting preserved
                 document.execCommand('insertText', false, '- ');
             }
         }
         
-        // Reapply formatting immediately after new line
-        setTimeout(() => {
-            if (formatState.bold) document.execCommand('bold', false, null);
-            if (formatState.italic) document.execCommand('italic', false, null);
-            if (formatState.underline) document.execCommand('underline', false, null);
-            updateButtonStates();
-        }, 0);
+        // Ensure formatting is maintained
+        updateButtonStates();
     }
 });
 
