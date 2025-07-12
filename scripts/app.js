@@ -11,32 +11,33 @@ function formatText(command) {
     // Get current state before executing command
     const wasActive = document.queryCommandState(command);
     
-    // Execute command and force focus
-    document.execCommand(command, false, null);
+    // Special handling for underline in Safari
+    if (command === 'underline') {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        
+        // Create a span with appropriate style
+        const span = document.createElement('span');
+        span.style.textDecoration = wasActive ? 'none' : 'underline';
+        
+        // Wrap selected content in span
+        range.surroundContents(span);
+        
+        // Update button state immediately
+        underlineBtn.classList.toggle('active', !wasActive);
+    } else {
+        // Normal handling for bold and italic
+        document.execCommand(command, false, null);
+    }
+    
     noteArea.focus();
-    
-    // Get button and update state
-    const button = {
-        'bold': boldBtn,
-        'italic': italicBtn,
-        'underline': underlineBtn
-    }[command];
-    
-    // Toggle button state opposite to what it was
-    button.classList.toggle('active', !wasActive);
+    updateButtonStates();
 }
 
 // Event listeners - modified for Safari underline handling
 boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
-underlineBtn.addEventListener('click', () => {
-    underlineBtn.dataset.toggling = 'true';
-    formatText('underline');
-    // Clear toggling state after update
-    setTimeout(() => {
-        delete underlineBtn.dataset.toggling;
-    }, 100);
-});
+underlineBtn.addEventListener('click', () => formatText('underline'));
 
 // Update button states function
 function updateButtonStates() {
