@@ -8,16 +8,32 @@ let filename = '';
 
 // Format buttons functionality
 function formatText(command) {
+    // Get current state before executing command
+    const isActive = document.queryCommandState(command);
     document.execCommand(command, false, null);
+    
+    // Update button state based on toggle
+    const button = {
+        'bold': boldBtn,
+        'italic': italicBtn,
+        'underline': underlineBtn
+    }[command];
+    
+    button.classList.toggle('active', !isActive);
     noteArea.focus();
-    updateButtonStates();
+    
+    // Force state update after command execution
+    requestAnimationFrame(() => {
+        updateButtonStates();
+    });
 }
 
+// Event listeners with consistent handling
 boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => formatText('underline'));
 
-// Add this function after your formatText function
+// Update button states function
 function updateButtonStates() {
     if (document.queryCommandState) {
         boldBtn.classList.toggle('active', document.queryCommandState('bold'));
