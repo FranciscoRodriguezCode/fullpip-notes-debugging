@@ -113,36 +113,40 @@ noteArea.addEventListener('keydown', (e) => {
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
         
+        // Get current formatting states
+        const isBold = document.queryCommandState('bold');
+        const isItalic = document.queryCommandState('italic');
+        const isUnderline = document.queryCommandState('underline');
+        
         // Check if current line starts with bullet
         if (currentLine.textContent.startsWith('- ')) {
             // Check if bullet point is empty
             if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
-                // Remove empty bullet and add new line
-                document.execCommand('insertLineBreak');
-                // Move cursor to start of new line
+                // Remove bullet and keep cursor at start of line
+                currentLine.textContent = '';
                 const newRange = document.createRange();
-                const newSelection = window.getSelection();
-                newRange.setStartAfter(currentLine);
+                newRange.setStart(currentLine, 0);
                 newRange.collapse(true);
-                newSelection.removeAllRanges();
-                newSelection.addRange(newRange);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
             } else {
                 // Add new bullet point and preserve formatting
                 document.execCommand('insertLineBreak');
-                // Get current formatting state
-                const isBold = document.queryCommandState('bold');
-                const isItalic = document.queryCommandState('italic');
-                const isUnderline = document.queryCommandState('underline');
-                // Insert bullet
                 document.execCommand('insertText', false, '- ');
-                // Reapply formatting if needed
+                
+                // Reapply formatting if active
                 if (isBold) document.execCommand('bold', false, null);
                 if (isItalic) document.execCommand('italic', false, null);
                 if (isUnderline) document.execCommand('underline', false, null);
             }
         } else {
-            // For non-bullet lines, just add a single line break
+            // For non-bullet lines, add line break and preserve formatting
             document.execCommand('insertLineBreak');
+            
+            // Reapply formatting if active
+            if (isBold) document.execCommand('bold', false, null);
+            if (isItalic) document.execCommand('italic', false, null);
+            if (isUnderline) document.execCommand('underline', false, null);
         }
     }
 });
