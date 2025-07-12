@@ -29,13 +29,15 @@ function formatText(command) {
 boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => {
+    // Track previous state
+    const wasActive = document.queryCommandState('underline');
     formatText('underline');
 
     // Only enter pending state if trying to untoggle and Safari hasn't updated
     setTimeout(() => {
         const isActive = document.queryCommandState('underline');
-        // If the button is still active but the user just tried to untoggle, show pending
-        if (!isActive && underlineBtn.classList.contains('active')) {
+        // If you tried to untoggle (wasActive) but it's still active, show pending
+        if (wasActive && isActive && underlineBtn.classList.contains('active')) {
             underlineBtn.classList.add('underline-pending');
         } else {
             underlineBtn.classList.remove('underline-pending');
