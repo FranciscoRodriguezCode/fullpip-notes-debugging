@@ -10,22 +10,25 @@ let filename = '';
 function formatText(command) {
     // Get current state before executing command
     const isActive = document.queryCommandState(command);
+    
+    // Execute formatting command
     document.execCommand(command, false, null);
     
-    // Update button state based on toggle
+    // Get button reference
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
     
+    // Immediate state update
     button.classList.toggle('active', !isActive);
+    
+    // Ensure focus remains on note area
     noteArea.focus();
     
-    // Force state update after command execution
-    requestAnimationFrame(() => {
-        updateButtonStates();
-    });
+    // Force immediate state check and update
+    updateButtonStates();
 }
 
 // Event listeners with consistent handling
@@ -36,9 +39,15 @@ underlineBtn.addEventListener('click', () => formatText('underline'));
 // Update button states function
 function updateButtonStates() {
     if (document.queryCommandState) {
-        boldBtn.classList.toggle('active', document.queryCommandState('bold'));
-        italicBtn.classList.toggle('active', document.queryCommandState('italic'));
-        underlineBtn.classList.toggle('active', document.queryCommandState('underline'));
+        // Get current states directly
+        const boldState = document.queryCommandState('bold');
+        const italicState = document.queryCommandState('italic');
+        const underlineState = document.queryCommandState('underline');
+        
+        // Update button states immediately
+        boldBtn.classList.toggle('active', boldState);
+        italicBtn.classList.toggle('active', italicState);
+        underlineBtn.classList.toggle('active', underlineState);
     }
 }
 
