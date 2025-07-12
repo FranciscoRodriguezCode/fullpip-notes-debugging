@@ -8,20 +8,40 @@ let filename = '';
 
 // Format buttons functionality - simplified for typing mode
 function formatText(command) {
-    // Execute format command directly
     document.execCommand(command, false, null);
-    
+
     // Update button state based on current command state
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
-    
+
     // Toggle button active state
     const isActive = document.queryCommandState(command);
     button.classList.toggle('active', isActive);
-    
+
+    // Safari workaround for underline: force selection change
+    if (command === 'underline') {
+        const sel = window.getSelection();
+        if (sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            // Collapse and expand selection to force state update
+            if (range.startOffset < (range.endContainer.length || 0)) {
+                range.setStart(range.endContainer, range.startOffset + 1);
+                range.setEnd(range.endContainer, range.startOffset);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                range.setStart(range.endContainer, range.startOffset - 1);
+                range.setEnd(range.endContainer, range.startOffset);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+        // Update again after nudge
+        setTimeout(updateButtonStates, 0);
+    }
+
     noteArea.focus();
 }
 
