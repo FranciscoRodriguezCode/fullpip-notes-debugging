@@ -113,10 +113,12 @@ noteArea.addEventListener('keydown', (e) => {
         const range = selection.getRangeAt(0);
         const currentLine = range.commonAncestorContainer;
         
-        // Get current formatting states
-        const isBold = document.queryCommandState('bold');
-        const isItalic = document.queryCommandState('italic');
-        const isUnderline = document.queryCommandState('underline');
+        // Store current formatting states
+        const formatState = {
+            bold: document.queryCommandState('bold'),
+            italic: document.queryCommandState('italic'),
+            underline: document.queryCommandState('underline')
+        };
         
         // Improved bullet point detection
         const lineText = currentLine.nodeType === 3 ? 
@@ -124,43 +126,31 @@ noteArea.addEventListener('keydown', (e) => {
             currentLine.innerText || currentLine.textContent;
         const isBullet = lineText.trim().match(/^-\s/);
         
+        // Apply line break first
+        document.execCommand('insertParagraph');
+        
         // Check if current line is a bullet point
         if (isBullet) {
-            // Check if bullet point is empty
             if (lineText.trim() === '-' || lineText.trim() === '- ') {
-                // Remove bullet point completely
+                // Remove empty bullet
                 if (currentLine.nodeType === 3) {
                     currentLine.textContent = '';
                 } else {
                     currentLine.innerHTML = '';
                 }
-                document.execCommand('insertParagraph');
-                
-                // Reapply formatting if active
-                if (isBold) document.execCommand('bold', false, null);
-                if (isItalic) document.execCommand('italic', false, null);
-                if (isUnderline) document.execCommand('underline', false, null);
             } else {
-                // Add new bullet point with formatting
-                document.execCommand('insertParagraph');
-                
-                // Apply formatting before inserting bullet
-                if (isBold) document.execCommand('bold', false, null);
-                if (isItalic) document.execCommand('italic', false, null);
-                if (isUnderline) document.execCommand('underline', false, null);
-                
-                // Insert bullet with space
+                // Add new bullet with current formatting
                 document.execCommand('insertText', false, '- ');
             }
-        } else {
-            // For non-bullet lines
-            document.execCommand('insertParagraph');
-            
-            // Reapply formatting if active
-            if (isBold) document.execCommand('bold', false, null);
-            if (isItalic) document.execCommand('italic', false, null);
-            if (isUnderline) document.execCommand('underline', false, null);
         }
+        
+        // Reapply formatting immediately after new line
+        setTimeout(() => {
+            if (formatState.bold) document.execCommand('bold', false, null);
+            if (formatState.italic) document.execCommand('italic', false, null);
+            if (formatState.underline) document.execCommand('underline', false, null);
+            updateButtonStates();
+        }, 0);
     }
 });
 
