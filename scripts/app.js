@@ -31,10 +31,11 @@ italicBtn.addEventListener('click', () => formatText('italic'));
 underlineBtn.addEventListener('click', () => {
     formatText('underline');
 
-    // Safari workaround: if underline is still active after click, mark as pending
+    // Only enter pending state if trying to untoggle and Safari hasn't updated
     setTimeout(() => {
         const isActive = document.queryCommandState('underline');
-        if (underlineBtn.classList.contains('active') && isActive) {
+        // If the button is still active but the user just tried to untoggle, show pending
+        if (!isActive && underlineBtn.classList.contains('active')) {
             underlineBtn.classList.add('underline-pending');
         } else {
             underlineBtn.classList.remove('underline-pending');
