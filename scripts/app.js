@@ -122,26 +122,35 @@ noteArea.addEventListener('keydown', (e) => {
         if (currentLine.textContent.startsWith('- ')) {
             // Check if bullet point is empty
             if (currentLine.textContent.trim() === '-' || currentLine.textContent.trim() === '- ') {
-                // Remove bullet and insert break
+                // Remove bullet point completely
                 currentLine.textContent = '';
                 document.execCommand('insertParagraph');
+                
+                // Move cursor to start of new line
+                const newRange = document.createRange();
+                newRange.setStart(selection.focusNode, 0);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
                 
                 // Reapply formatting if active
                 if (isBold) document.execCommand('bold', false, null);
                 if (isItalic) document.execCommand('italic', false, null);
                 if (isUnderline) document.execCommand('underline', false, null);
             } else {
-                // Add new bullet point and preserve formatting
+                // Add new bullet point
                 document.execCommand('insertParagraph');
-                document.execCommand('insertText', false, '- ');
                 
-                // Reapply formatting if active
+                // Apply formatting before inserting bullet
                 if (isBold) document.execCommand('bold', false, null);
                 if (isItalic) document.execCommand('italic', false, null);
                 if (isUnderline) document.execCommand('underline', false, null);
+                
+                // Insert bullet with space
+                document.execCommand('insertText', false, '- ');
             }
         } else {
-            // For non-bullet lines, add paragraph break and preserve formatting
+            // For non-bullet lines
             document.execCommand('insertParagraph');
             
             // Reapply formatting if active
