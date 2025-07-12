@@ -10,9 +10,15 @@ let filename = '';
 function formatText(command) {
     // Special handling for underline to ensure proper toggling
     if (command === 'underline') {
+        // Get current underline state before executing command
         const isUnderlined = document.queryCommandState('underline');
         document.execCommand('underline', false, null);
-        underlineBtn.classList.toggle('active', !isUnderlined);
+        // Update button state opposite to previous state
+        underlineBtn.classList.toggle('active');
+        // Force immediate state update
+        requestAnimationFrame(() => {
+            updateButtonStates();
+        });
     } else {
         document.execCommand(command, false, null);
     }
@@ -31,7 +37,10 @@ italicBtn.addEventListener('click', () => {
 
 underlineBtn.addEventListener('click', () => {
     formatText('underline');
-    updateButtonStates();
+    // Force immediate state check after click
+    requestAnimationFrame(() => {
+        updateButtonStates();
+    });
 });
 
 // Add this function after your formatText function
@@ -39,9 +48,7 @@ function updateButtonStates() {
     if (document.queryCommandState) {
         boldBtn.classList.toggle('active', document.queryCommandState('bold'));
         italicBtn.classList.toggle('active', document.queryCommandState('italic'));
-        // Force check current underline state
-        const isUnderlined = document.queryCommandState('underline');
-        underlineBtn.classList.toggle('active', isUnderlined);
+        underlineBtn.classList.toggle('active', document.queryCommandState('underline'));
     }
 }
 
