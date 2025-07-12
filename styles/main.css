@@ -238,3 +238,8 @@ button {
   background: var(--textarea-border);
   color: var(--textarea-bg);
 }
+
+/* Add this to your CSS */
+.underline-pending {
+    background-color: #ffcccc !important; /* light red */
+}

@@ -8,47 +8,39 @@ let filename = '';
 
 // Format buttons functionality - simplified for typing mode
 function formatText(command) {
+    // Execute format command directly
     document.execCommand(command, false, null);
-
+    
     // Update button state based on current command state
     const button = {
         'bold': boldBtn,
         'italic': italicBtn,
         'underline': underlineBtn
     }[command];
-
+    
     // Toggle button active state
     const isActive = document.queryCommandState(command);
     button.classList.toggle('active', isActive);
-
-    // Safari workaround for underline: force selection change
-    if (command === 'underline') {
-        const sel = window.getSelection();
-        if (sel.rangeCount) {
-            const range = sel.getRangeAt(0);
-            // Collapse and expand selection to force state update
-            if (range.startOffset < (range.endContainer.length || 0)) {
-                range.setStart(range.endContainer, range.startOffset + 1);
-                range.setEnd(range.endContainer, range.startOffset);
-                sel.removeAllRanges();
-                sel.addRange(range);
-                range.setStart(range.endContainer, range.startOffset - 1);
-                range.setEnd(range.endContainer, range.startOffset);
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
-        }
-        // Update again after nudge
-        setTimeout(updateButtonStates, 0);
-    }
-
+    
     noteArea.focus();
 }
 
 // Event listeners for format buttons
 boldBtn.addEventListener('click', () => formatText('bold'));
 italicBtn.addEventListener('click', () => formatText('italic'));
-underlineBtn.addEventListener('click', () => formatText('underline'));
+underlineBtn.addEventListener('click', () => {
+    formatText('underline');
+
+    // Safari workaround: if underline is still active after click, mark as pending
+    setTimeout(() => {
+        const isActive = document.queryCommandState('underline');
+        if (underlineBtn.classList.contains('active') && isActive) {
+            underlineBtn.classList.add('underline-pending');
+        } else {
+            underlineBtn.classList.remove('underline-pending');
+        }
+    }, 0);
+});
 
 // Simplified state update
 function updateButtonStates() {
@@ -69,12 +61,14 @@ function updateButtonStates() {
 
 // Keep only necessary event listeners
 document.addEventListener('selectionchange', () => {
+    underlineBtn.classList.remove('underline-pending');
     if (document.activeElement === noteArea) {
         updateButtonStates();
     }
 });
 
 noteArea.addEventListener('input', () => {
+    underlineBtn.classList.remove('underline-pending');
     requestAnimationFrame(updateButtonStates);
 });
 
