@@ -126,34 +126,9 @@ noteArea.addEventListener('keydown', (e) => {
         if (formatState.italic) span.style.fontStyle = 'italic';
         if (formatState.underline) span.style.textDecoration = 'underline';
         
-        // Check for bullet point
-        const currentText = currentLine.textContent || currentLine.innerText;
-        const isBullet = currentText.startsWith('- ');
-        
-        if (isBullet) {
-            if (currentText.trim() === '-' || currentText.trim() === '- ') {
-                // Remove empty bullet
-                currentLine.textContent = '';
-                document.execCommand('insertParagraph');
-            } else {
-                // Insert new line with preserved formatting
-                document.execCommand('insertParagraph');
-                const bullet = document.createTextNode('- ');
-                span.appendChild(bullet);
-                selection.getRangeAt(0).insertNode(span);
-                
-                // Position cursor after bullet
-                const newRange = document.createRange();
-                newRange.setStartAfter(span);
-                newRange.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
-            }
-        } else {
-            // Insert new line with preserved formatting
-            document.execCommand('insertParagraph');
-            selection.getRangeAt(0).insertNode(span);
-        }
+        // Insert new line with preserved formatting
+        document.execCommand('insertParagraph');
+        selection.getRangeAt(0).insertNode(span);
         
         updateButtonStates();
     }
