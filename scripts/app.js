@@ -101,26 +101,26 @@ noteArea.addEventListener('keydown', (e) => {
         e.preventDefault();
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
-        const currentLine = range.commonAncestorContainer;
         
-        // Get formatting state before any changes
+        // Store current formatting states
         const formatState = {
             bold: document.queryCommandState('bold'),
             italic: document.queryCommandState('italic'),
             underline: document.queryCommandState('underline')
         };
         
-        // Create formatted span for new content
-        const span = document.createElement('span');
-        if (formatState.bold) span.style.fontWeight = 'bold';
-        if (formatState.italic) span.style.fontStyle = 'italic';
-        if (formatState.underline) span.style.textDecoration = 'underline';
+        // Insert line break first
+        document.execCommand('insertLineBreak');
         
-        // Insert new line with preserved formatting
-        document.execCommand('insertParagraph');
-        selection.getRangeAt(0).insertNode(span);
+        // Reapply formatting commands instead of using span
+        if (formatState.bold) document.execCommand('bold', false, null);
+        if (formatState.italic) document.execCommand('italic', false, null);
+        if (formatState.underline) document.execCommand('underline', false, null);
         
-        updateButtonStates();
+        // Force button state update
+        requestAnimationFrame(() => {
+            updateButtonStates();
+        });
     }
 });
 
