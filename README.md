@@ -13,3 +13,10 @@
   1. Bullet Point functionality (adds phantom bullet after 2 Enters)
   2. Title and newline issue (immediately under new line instead of 1 more)
   3. Need to adapt format buttons to reflect area where the format is applied (currently works if is at end of line but button remains the same if selecting another part of the text.)
+ 
+## 07/12/2025
+- Removed bullet point functionality
+- Reduced FullPiP outline for thinner videos
+- Added bold, italic, and underline format buttons
+- Need to fix:
+  1. Copy to Clipboard format copy, instead of HTML values
